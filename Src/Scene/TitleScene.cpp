@@ -1,0 +1,213 @@
+#include <DxLib.h>
+#include "../Application.h"
+#include "../Manager/SceneManager.h"
+#include "../Manager/InputManager.h"
+#include "../Manager/SoundManager.h"
+#include "../Common/Color.h"
+#include "TitleScene.h"
+
+////デフォルトコンストラクタ
+//SceneTitle::SceneTitle(void)
+//{
+//	titleImage_ = 0;
+//}
+
+////デストラクタ
+//SceneTitle::~SceneTitle(void)
+//{
+//
+//}
+
+//初期化処理
+void TitleScene::Init(void)
+{
+	titleImage_ = LoadGraph("Data/Image/Title.png");
+	tutorialOffsetX_ = 0; //矢印のオフセット値を更新
+	//音楽
+	SoundManager::GetInstance().Play(SoundManager::SRC::TITLE_BGM, Sound::TIMES::LOOP);
+}
+
+//更新処理
+void TitleScene::Update(void)
+{
+	if (mode_ == TITLE_MODE::NORMAL)
+	{
+		ProcessTitleDecision();
+		ProcessTitleSelection();
+	}
+	else if(mode_ == TITLE_MODE::TUTORIAL)
+	{
+		Tutorial();
+	}
+	else if (mode_ == TITLE_MODE::EXIT)
+	{
+		ExitGame();
+	}
+}
+
+//描画処理
+void TitleScene::Draw(void)
+{
+	DrawGraph(0, 0, titleImage_, true);
+
+	SetFontSize(FONT_SIZE);
+	if (mode_ == TITLE_MODE::NORMAL)
+	{
+		//ゲームをするか終了するか
+		DrawString(ARROW_X, ARROW_Y + normalOffset_, "→",Color::WHITE);
+
+		DrawString(TITLE_MESSAGE_X, TITLE_MESSAGE_Y, "ゲーム開始", Color::WHITE);
+
+		DrawString(TITLE_MESSAGE_X, Application::SCREEN_SIZE_Y - 100, "ゲーム終了", Color::WHITE);
+	}
+	else if (mode_ == TITLE_MODE::TUTORIAL)
+	{
+		//ゲームを始めるか、チュートリアルをON・OFFするか
+		DrawFormatString(ARROW_X - tutorialOffsetX_, ARROW_Y + tutorialOffsetY_, Color::WHITE, "→");
+
+		if (SceneManager::GetInstance().IsTutorialEnabled()) {
+			DrawString(TUTORIAL_TEXT_X, TUTORIAL_TEXT_Y, "チュートリアル：【 ON 】", Color::WHITE);
+		}
+		else {
+			DrawString(TUTORIAL_TEXT_X, TUTORIAL_TEXT_Y, "チュートリアル：【 OFF 】", Color::WHITE);
+		}
+		DrawString(TITLE_MESSAGE_X, TITLE_MESSAGE_Y, "ゲーム開始", Color::WHITE);
+	}
+	else if (mode_ == TITLE_MODE::EXIT)
+	{
+		//ゲームを終了するか
+		DrawFormatString(EXIT_ARROW_X - exitOffset_, TITLE_MESSAGE_Y + OFFSET_ARROW, Color::WHITE, "→");
+
+		DrawFormatString(EXIT_TEXT_X, EXIT_TEXT_Y, Color::WHITE, "ゲームを終了しますか？");
+
+		DrawString(EXIT_YES_TEXT_X, EXIT_YES_TEXT_Y, "はい", Color::WHITE);
+		DrawString(EXIT_NO_TEXT_X, EXIT_NO_TEXT_Y, "いいえ", Color::WHITE);
+	}
+	SetFontSize(DEFAULT_FONT_SIZE);
+}
+
+//解放処理
+void TitleScene::Release(void)
+{
+	SoundManager::GetInstance().Stop(SoundManager::SRC::TITLE_BGM);
+}
+
+void TitleScene::ProcessTitleSelection(void)
+{
+	//ゲームを始めるか終了するかの操作処理
+	if (ins_.IsTrgDown(KEY_INPUT_UP) ||
+		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_UP))
+	{
+		int index = static_cast<int>(titleSelection_);
+		index = (index + (static_cast<int>(TITLE_SELECTION::MAX) - 1)) % static_cast<int>(TITLE_SELECTION::MAX);
+		titleSelection_ = static_cast<TITLE_SELECTION>(index);
+		normalOffset_ = index * OFFSET_ARROW; //矢印のオフセット値を更新
+	}
+	else if (ins_.IsTrgDown(KEY_INPUT_DOWN) ||
+		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_DOWN))
+	{
+		int index = static_cast<int>(titleSelection_);
+		index = (index + 1) % static_cast<int>(TITLE_SELECTION::MAX);
+		titleSelection_ = static_cast<TITLE_SELECTION>(index);
+		normalOffset_ = index * OFFSET_ARROW; //矢印のオフセット値を更新
+	}
+}
+
+void TitleScene::ProcessTitleDecision(void)
+{
+	if(ins_.IsTrgDown(KEY_INPUT_RETURN) ||
+		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DOWN))
+	{
+		//選択音
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::ONCE);
+
+		switch (titleSelection_)
+		{
+		case TitleScene::START_GAME:
+			mode_ = TITLE_MODE::TUTORIAL;
+			break;
+		case TitleScene::EXIT_GAME:
+			mode_ = TITLE_MODE::EXIT;
+			break;
+		case TitleScene::MAX:
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void TitleScene::Tutorial(void)
+{
+	//上下キーで切り替える
+	if (ins_.IsTrgDown(KEY_INPUT_UP) || ins_.IsTrgDown(KEY_INPUT_DOWN) ||
+		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_UP) ||
+		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_DOWN))
+	{
+		//矢印のオフセットの位置を決める
+		tutorialIndex_ = 1 - tutorialIndex_;
+		if (tutorialIndex_ == 0)
+		{
+			tutorialOffsetX_ = 0; //矢印のオフセット値を更新
+			tutorialOffsetY_ = tutorialIndex_ * OFFSET_ARROW; //矢印のオフセット値を更新
+		}
+		else
+		{
+			tutorialOffsetX_ = TUTORIAL_ARROW_OFFSET_X; //矢印のオフセット値を更新
+			tutorialOffsetY_ = tutorialIndex_ * OFFSET_ARROW; //矢印のオフセット値を更新
+		}
+	}
+
+	//最終決定
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN) ||
+		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DOWN))
+	{
+		if (tutorialIndex_ == 0)
+		{
+			//ゲームシーンへ遷移
+			SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
+		}
+		else
+		{
+			//チュートリアルON/OFFを切り替える
+			SceneManager::GetInstance().ToggleTutorial();
+		}
+	}
+	else if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_TAB) ||
+		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::RIGHT))
+	{
+		mode_ = TITLE_MODE::NORMAL;
+	}
+}
+
+void TitleScene::ExitGame(void)
+{
+	//左右キーで「はい」「いいえ」を切り替える
+	if (ins_.IsTrgDown(KEY_INPUT_LEFT) || ins_.IsTrgDown(KEY_INPUT_RIGHT) ||
+		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_LEFT) ||
+		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_RIGHT))
+	{
+		//矢印のオフセットの位置を決める
+		confirmIndex_ = 1 - confirmIndex_;	//0と1を反転させる
+		exitOffset_ = confirmIndex_ * -EXIT_OPTION_SPACING_X; //矢印のオフセット値を更新
+	}
+
+	//最終決定
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN) || 
+		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DOWN))
+	{
+		//選択音
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::ONCE);
+
+		if (confirmIndex_ == 0)
+		{
+			//「いいえ」なら通常メニューモードに戻る
+			mode_ = TITLE_MODE::NORMAL;
+		}
+		else
+		{
+			//「はい」なら本当にゲーム終了
+			Application::isRunning_ = false;
+		}
+	}
+}
