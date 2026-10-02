@@ -64,4 +64,10 @@ void GameScene::ChangePhase(QUEST_PHASE phase)
 		phase_ = std::make_unique<BattlePhase>(*this);
 		break;
 	}
+
+	// 追加: フェーズ初期化（生成直後に必ず Init を呼ぶ）
+	if (phase_)
+	{
+		phase_->Init();
+	}
 }

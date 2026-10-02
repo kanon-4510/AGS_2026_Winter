@@ -19,11 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\ActionGauge.cpp" />
     <ClCompile Include="Src\Scene\Phase\PhaseBase.cpp" />
     <ClCompile Include="Src\Scene\Phase\BattlePhase.cpp" />
-    <ClCompile Include="Src\Object\MagicDataBase.cpp" />
     <ClCompile Include="Src\Object\Enemy.cpp" />
-    <ClCompile Include="Src\Object\JobData.cpp" />
     <ClCompile Include="Src\Object\Player.cpp" />
     <ClCompile Include="Src\Application.cpp" />
     <ClCompile Include="Src\Common\Fader.cpp" />
@@ -49,11 +48,10 @@
     <ClCompile Include="Src\Scene\Phase\StoryPhase.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\ActionGauge.h" />
     <ClInclude Include="Src\Scene\Phase\PhaseBase.h" />
     <ClInclude Include="Src\Scene\Phase\BattlePhase.h" />
-    <ClInclude Include="Src\Object\MagicDataBase.h" />
     <ClInclude Include="Src\Object\Enemy.h" />
-    <ClInclude Include="Src\Object\JobData.h" />
     <ClInclude Include="Src\Object\Player.h" />
     <ClInclude Include="Src\Application.h" />
     <ClInclude Include="Src\Common\Color.h" />

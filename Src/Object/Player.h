@@ -33,7 +33,7 @@ public:
 	constexpr static int ASTROLOGY_DIVISOR = 5;      // 占星術ボーナス除数
 
 	// 定数設定（行間と各表示エリアの起点Y座標）
-	static constexpr int BASE_Y = 120;             // 基礎ステータスの表示起点Y
+	static constexpr int BASE_Y = 600;             // 基礎ステータスの表示起点Y
 	static constexpr int SKILL_BASE_Y = 310;       // 技能ステータスの表示起点Y
 	static constexpr int LINE_HEIGHT = 30;         // 行間
 	static constexpr int JOB_BONUS_OFFSET_X = 100; // 職業ボーナスの描画Xオフセット
@@ -51,6 +51,8 @@ public:
 	int heal_ = 2;	//回復量
 
 	Player();
+
+	void Init();	//初期化処理
 
 	//更新処理
 	void Update();

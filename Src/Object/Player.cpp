@@ -7,17 +7,28 @@ Player::Player()
 {
 }
 
+void Player::Init()
+{
+	hp_ = maxHp_;
+	power_ = POWER;
+	defense_ = 0.0f;
+	heal_ = 2;
+}
+
 void Player::Update()
 {
 }
 
 void Player::Draw()
 {
+	DrawFormatString(STATUS_X, BASE_Y, STATUS_COLOR, "ATK: %d", hp_);
+	DrawFormatString(STATUS_X, BASE_Y+20, STATUS_COLOR, "ATK: %d", power_);
+	DrawFormatString(STATUS_X, BASE_Y+40, STATUS_COLOR, "DEF: %d", defense_);
 }
 
 float Player::Attack(float power)
 {
-	int power_ = POWER * power;
+	power_ = POWER * power;
 	return power_;
 }
 

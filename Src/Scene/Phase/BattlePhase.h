@@ -1,7 +1,10 @@
 #pragma once
+#include "../../Manager/InputManager.h"
+#include"../../Object/ActionGauge.h"
 #include "PhaseBase.h"
 
 class GameScene;
+class Player;
 
 class BattlePhase : public PhaseBase
 {
@@ -36,6 +39,9 @@ private:
 	InputManager& ins_ = InputManager::GetInstance();
 
 	GameScene& gameScene_;			//親の情報を渡す
+	std::unique_ptr<Player> player_;	//プレイヤーの情報を渡す
+	ActionGauge actionGauge_;		//アクションゲージ
+
 	BATTLE_PHASE battlePhase_;		//バトルフェーズの種類
 	COMMAND_TYPE commandType_;		//コマンドの種類
 
