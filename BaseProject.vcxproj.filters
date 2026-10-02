@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Src\Object\JobData.cpp" />
-    <ClCompile Include="Src\Object\PlayerStatus.cpp" />
+    <ClCompile Include="Src\Object\Player.cpp" />
     <ClCompile Include="Src\Application.cpp" />
     <ClCompile Include="Src\Common\Fader.cpp" />
     <ClCompile Include="Src\Common\Vector2.cpp" />
@@ -32,7 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Object\JobData.h" />
-    <ClInclude Include="Src\Object\PlayerStatus.h" />
+    <ClInclude Include="Src\Object\Player.h" />
     <ClInclude Include="Src\Application.h" />
     <ClInclude Include="Src\Common\Color.h" />
     <ClInclude Include="Src\Common\Fader.h" />
