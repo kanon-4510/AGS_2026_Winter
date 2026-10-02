@@ -2,7 +2,6 @@
 #include <memory>
 #include "../Manager/InputManager.h"
 #include "SceneBase.h"
-#include "../Object/PlayerStatus.h"
 #include "Phase/PhaseBase.h"
 
 class StoryPhase;

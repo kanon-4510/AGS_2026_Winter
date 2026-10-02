@@ -45,7 +45,6 @@ void GameScene::Draw(void)
 	phase_->Draw();
 }
 
-
 //‰ğ•úˆ—
 void GameScene::Release(void)
 {
