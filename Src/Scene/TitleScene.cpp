@@ -6,13 +6,13 @@
 #include "../Common/Color.h"
 #include "TitleScene.h"
 
-////デフォルトコンストラクタ
+//デフォルトコンストラクタ
 //SceneTitle::SceneTitle(void)
 //{
 //	titleImage_ = 0;
 //}
 
-////デストラクタ
+//デストラクタ
 //SceneTitle::~SceneTitle(void)
 //{
 //

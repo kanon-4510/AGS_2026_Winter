@@ -6,97 +6,167 @@
 BattlePhase::BattlePhase(GameScene& gameScene)
 	: gameScene_(gameScene)
 {
-	battleStep_ = BATTLE_STEP::COMMAND_SELECT;
-	commandSelect_ = COMMAND_SELECT::ATTACK;
+	battlePhase_ = COMMAND_SELECT;
+	commandType_ = ATTACK;
+	battleTurnCnt_ = 1;
+}
+
+BattlePhase::~BattlePhase(void)
+{
+}
+
+void BattlePhase::Init(void)
+{
 	
 }
 
-BattlePhase::~BattlePhase()
+void BattlePhase::Update(void)
+{
+	//フェーズごとの更新処理を呼び出す
+	switch (battlePhase_)
+	{
+	case BattlePhase::COMMAND_SELECT:
+		UpdateCommandSelect();
+		break;
+	case BattlePhase::PLAYER_TURN:
+		UpdatePlayerTurn();
+		break;
+	case BattlePhase::ENEMY_TURN:
+		UpdateEnemyTurn();
+		break;
+	case BattlePhase::BATTLE_END:
+		UpdateBattleEnd();
+		break;
+	}
+}
+
+void BattlePhase::Draw(void)
+{
+	DrawFormatString(100, 50, 0xFFFFFF, "Battle Turn: %d", battleTurnCnt_);
+	DrawString(100, 100, "Battle Phase", GetColor(255, 0, 0));
+	DrawFormatString(100, 150, 0xFFFFFF, "Battle Phase: %d", battlePhase_);
+	switch (battlePhase_)
+	{
+	case BattlePhase::COMMAND_SELECT:
+		DrawCommandSelect();
+		break;
+	case BattlePhase::PLAYER_TURN:
+		DrawPlayerTrun();
+		break;
+	case BattlePhase::ENEMY_TURN:
+		DrawEnemyTrun();
+		break;
+	case BattlePhase::BATTLE_END:
+		DrawString(100, GameScene::COMMAND_MENU_Y, "バトル終了", GetColor(255, 0, 0));
+		break;
+	}
+}
+
+void BattlePhase::Release(void)
 {
 }
 
-void BattlePhase::Init()
+void BattlePhase::UpdateCommandSelect(void)
+{
+	//コマンド選択の処理
+	if(ins_.IsTrgDown(KEY_INPUT_Q))
+	{
+		commandType_ = ATTACK;
+		battlePhase_ = PLAYER_TURN;
+	}
+	if (ins_.IsTrgDown(KEY_INPUT_W))
+	{
+		commandType_ = TALK;
+		battlePhase_ = PLAYER_TURN;
+	}
+	if (ins_.IsTrgDown(KEY_INPUT_E))
+	{
+		commandType_ = RUN;
+		battlePhase_ = PLAYER_TURN;
+	}
+}
+
+void BattlePhase::UpdatePlayerTurn(void)
+{
+	//プレイヤーのターンの処理
+	switch (commandType_)
+	{
+	case BattlePhase::ATTACK:
+		ProsesSelectAttack();
+		break;
+	case BattlePhase::TALK:
+		ProsesSelectTalk();
+		break;
+	case BattlePhase::RUN:
+		ProsesSelectRun();
+		break;
+	}
+}
+
+void BattlePhase::UpdateEnemyTurn(void)
 {
 }
 
-void BattlePhase::Update()
+void BattlePhase::UpdateBattleEnd(void)
 {
-	auto& ins = InputManager::GetInstance();
-
-	TurnManager();
-
-	if (ins.IsTrgDown(KEY_INPUT_RETURN))
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
 		gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_STORY);
 	}
 }
 
-void BattlePhase::Draw()
+void BattlePhase::DrawCommandSelect(void)
 {
-	DrawString(0, 0, "Battle Phase", GetColor(255, 0, 0));
-	DrawCommandMenu(0, 40, { "こうげき", "話す", "逃げる" }, static_cast<int>(commandSelect_));
+	//コマンド選択の描画処理
+	DrawString(GameScene::COMMAND_MENU_X, GameScene::COMMAND_MENU_Y, "1.こうげき　2.はなす　3.にげる", GetColor(255, 255, 255));
 }
 
-void BattlePhase::Release()
+void BattlePhase::DrawPlayerTrun(void)
 {
+	//プレイヤーのターンの描画処理
+	DrawFormatString(100, GameScene::COMMAND_MENU_Y, 0xFFFFFF, "CommandType: %d", commandType_);
 }
 
-void BattlePhase::TurnManager(void)
+void BattlePhase::DrawEnemyTrun(void)
 {
-	switch (battleStep_)
+	//敵のターンの描画処理
+}
+
+void BattlePhase::ProsesSelectAttack(void)
+{
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-	case BattlePhase::BATTLE_STEP::COMMAND_SELECT:
-		CommandSelect();
-		break;
-	case BattlePhase::BATTLE_STEP::PLAYER_ATTACK:
-		PlayerAttack();
-		break;
-	case BattlePhase::BATTLE_STEP::ENEMY_ATTACK:
-		EnemyAttack();
-		break;
-	case BattlePhase::BATTLE_STEP::MAX:
-		break;
-	default:
-		break;
+		battleTurnCnt_++;
+		battlePhase_ = COMMAND_SELECT;
+		//battlePhase_ = ENEMY_TURN;
 	}
 }
 
-void BattlePhase::CommandSelect(void)
+void BattlePhase::ProsesSelectTalk(void)
 {
-	// コマンド選択の処理
-	int commandIndex = static_cast<int>(commandSelect_);
-	ProcessCommandMenuSelection(commandIndex, static_cast<int>(COMMAND_SELECT::MAX));
-	commandSelect_ = static_cast<COMMAND_SELECT>(commandIndex);
-}
-
-void BattlePhase::PlayerAttack(void)
-{
-}
-
-void BattlePhase::EnemyAttack(void)
-{
-}
-
-
-void BattlePhase::DrawCommandMenu(int x, int y, const std::vector<std::string>& labels, int cursor, int interval)
-{
-	for (int i = 0; i < (int)labels.size(); ++i) {
-		int color = GetColor(255, 255, 255);
-		int selectColor = GetColor(255, 255, 0); //選択中は黄色にする
-		DrawFormatString(x, y + i * interval, (cursor == i ? selectColor : color), labels[i].c_str());
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+	{
+		battleTurnCnt_++;
+		battlePhase_ = COMMAND_SELECT;
+		//battlePhase_ = ENEMY_TURN;
 	}
 }
 
-void BattlePhase::ProcessCommandMenuSelection(int& cursor, int maxItems)
+void BattlePhase::ProsesSelectRun(void)
 {
-	if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_UP) ||
-		InputManager::GetInstance().IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_UP))
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		cursor = (cursor - 1 + maxItems) % maxItems; //上にループ
-	}
-	if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_DOWN) ||
-		InputManager::GetInstance().IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_DOWN))
-	{
-		cursor = (cursor + 1) % maxItems; //下にループ
+		//ターンが経過するごとに逃げれる確率が下がる
+		int runRate = RUN_SUCCESS_RATE + (battleTurnCnt_ * 5);
+
+		if (runRate <= GetRand(99))
+		{
+			battlePhase_ = BATTLE_END;
+		}
+		else
+		{
+			battleTurnCnt_++;
+			battlePhase_ = COMMAND_SELECT;
+		}
 	}
 }

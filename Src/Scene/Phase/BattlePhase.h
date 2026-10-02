@@ -7,21 +7,23 @@ class BattlePhase : public PhaseBase
 {
 public:
 
-	enum class BATTLE_STEP
+	enum BATTLE_PHASE
 	{
 		COMMAND_SELECT,	//コマンド選択
-		PLAYER_ATTACK,	//プレイヤー攻撃
-		ENEMY_ATTACK,	//敵攻撃
-		MAX
+		PLAYER_TURN,	//プレイヤーのターン
+		ENEMY_TURN,		//敵のターン
+		BATTLE_END,		//戦闘終了
 	};
 
-	enum class COMMAND_SELECT
+	enum COMMAND_TYPE
 	{
-		ATTACK,	//攻撃
-		TALK,	//会話
-		RUN,	//逃走
-		MAX
+		ATTACK,			//攻撃
+		TALK,			//話す
+		RUN,			//逃げる
+		MAX				//最大値
 	};
+
+	static constexpr int RUN_SUCCESS_RATE = 0;	//逃げれる確率(%)
 
 	BattlePhase(GameScene& gameScene);
 	~BattlePhase();
@@ -31,21 +33,24 @@ public:
 	void Release(void)override;
 private:
 
+	InputManager& ins_ = InputManager::GetInstance();
+
 	GameScene& gameScene_;			//親の情報を渡す
+	BATTLE_PHASE battlePhase_;		//バトルフェーズの種類
+	COMMAND_TYPE commandType_;		//コマンドの種類
 
-	BATTLE_STEP battleStep_;		//バトルステップ
-	COMMAND_SELECT commandSelect_;	//コマンド選択
+	int battleTurnCnt_;				//バトルのターン数をカウント
 
-	void TurnManager(void);		//ターン管理
+	void UpdateCommandSelect(void);	//コマンド選択の更新処理
+	void UpdatePlayerTurn(void);	//プレイヤーのターンの更新処理
+	void UpdateEnemyTurn(void);		//敵のターンの更新処理
+	void UpdateBattleEnd(void);		//戦闘終了の更新処理
 
-	void CommandSelect(void);	//コマンド選択
-	void PlayerAttack(void);	//プレイヤー攻撃
-	void EnemyAttack(void);		//敵攻撃
+	void DrawCommandSelect(void);	//コマンド選択の描画処理
+	void DrawPlayerTrun(void);		//プレイヤーのターンの描画処理
+	void DrawEnemyTrun(void);		//敵のターンの描画処理
 
-	// 引数に vector を使うことで、3択でも4択でも対応可能にします
-	void DrawCommandMenu(int x, int y, const std::vector<std::string>& labels, int cursor, int interval = 40);
-
-	// DrawCommandMenuの数に合わせて選択をできるようにする
-	void ProcessCommandMenuSelection(int& cursor, int maxItems);
-
+	void ProsesSelectAttack(void);	//攻撃コマンドの処理
+	void ProsesSelectTalk(void);	//話すコマンドの処理
+	void ProsesSelectRun(void);		//逃げるコマンドの処理
 };
