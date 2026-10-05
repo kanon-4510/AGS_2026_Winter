@@ -28,6 +28,8 @@ public:
 
 	static constexpr int RUN_SUCCESS_RATE = 0;	//逃げれる確率(%)
 
+	int EnemyHP = 100;	//敵のHP
+
 	BattlePhase(GameScene& gameScene);
 	~BattlePhase();
 	void Init(void)override;
@@ -44,6 +46,8 @@ private:
 
 	BATTLE_PHASE battlePhase_;		//バトルフェーズの種類
 	COMMAND_TYPE commandType_;		//コマンドの種類
+
+	bool isBarActive_ = false;				//アクションゲージが動いているかどうか
 
 	int battleTurnCnt_;				//バトルのターン数をカウント
 
