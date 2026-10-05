@@ -51,6 +51,13 @@ void Player::FullHeal()
 	hp_ = GetMaxHp();
 }
 
+void Player::LevelUp()
+{
+	maxHp_ += HP_UP;
+	hp_ = maxHp_;
+	power_ += POWER_UP;
+}
+
 void Player::Damage(int damage)
 {
 	//防御力を考慮してダメージを計算
