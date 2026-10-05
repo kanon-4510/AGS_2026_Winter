@@ -13,7 +13,7 @@ namespace DummyEnemyData {
 ActionGauge::ActionGauge()
     : barPosition_(0.0f)
     , barSpeed_(1.0f)
-    , isActive_(false)
+    , isVisible_(false)
     , greenStart_(0.0f), greenEnd_(0.0f)
     , yellowStart_(0.0f), yellowEnd_(0.0f)
     , redStart_(0.0f), redEnd_(0.0f)
@@ -56,12 +56,13 @@ void ActionGauge::Start(float greenW, float yellowW, float redW, float speed)
 
     barPosition_ = 0.0f;
     barSpeed_ = speed; // param.speed ではなく speed
-    isActive_ = true;
+    isVisible_ = true;
+    isMoving_ = true; // バーを動かす
 }
 
 void ActionGauge::Update(float deltaTime)
 {
-    if (!isActive_) return;
+    if (!isMoving_) return;
 
     barPosition_ += barSpeed_ * deltaTime;
 
@@ -73,15 +74,15 @@ void ActionGauge::Update(float deltaTime)
     // 左端まで戻ってきたら時間切れ (MISS)
     else if (barSpeed_ < 0.0f && barPosition_ <= 0.0f) {
         barPosition_ = 0.0f;
-        isActive_ = false;
+        isMoving_ = false; // 移動だけ止める（表示はそのまま残る）
     }
 }
 
 void ActionGauge::Draw()
 {
     // 色設定
-    unsigned int colorBg = GetColor(0, 0, 0); // 枠内背景色（薄グレー）
-    unsigned int colorBorder = GetColor(255, 255, 255);     // 外枠線（濃灰色）
+    unsigned int colorBg = GetColor(0, 0, 0);        // 枠内背景色
+    unsigned int colorBorder = GetColor(255, 255, 255);  // 外枠線
 
     // --------------------------------------------------
     // 1. 【メッセージ枠（土台）】（常に描画）
@@ -91,9 +92,9 @@ void ActionGauge::Draw()
     DrawBox(GAUGE_X + 1, GAUGE_Y + 1, GAUGE_X + GAUGE_WIDTH - 1, GAUGE_Y + GAUGE_HEIGHT - 1, colorBorder, FALSE);
 
     // --------------------------------------------------
-    // 2. 【判定ゾーン & バー】（isActive_ が true の時だけ上乗せ描画）
+    // 2. 【判定ゾーン & バー】（isVisible_ が true の間は消えずに残る）
     // --------------------------------------------------
-    if (isActive_) {
+    if (isVisible_) { // ★ isActive_ から isVisible_ に変更
         unsigned int colorGreen = GetColor(80, 200, 80);   // 緑 (GOOD)
         unsigned int colorYellow = GetColor(255, 220, 0);   // 黄 (GREAT)
         unsigned int colorRed = GetColor(255, 60, 60);    // 赤 (PERFECT)
@@ -110,6 +111,7 @@ void ActionGauge::Draw()
         DrawZone(redStart_, redEnd_, colorRed);
 
         // 動くバー（ポインタ）描画
+        // isMoving_ が false になっても、押した時点の barPosition_ の位置で描画され続ける
         int currentX = GAUGE_X + static_cast<int>(barPosition_ * GAUGE_WIDTH);
         DrawLine(currentX, GAUGE_Y - 4, currentX, GAUGE_Y + GAUGE_HEIGHT + 4, GetColor(255, 255, 255), 4);
     }
@@ -117,9 +119,9 @@ void ActionGauge::Draw()
 
 GaugeState ActionGauge::PressButton()
 {
-    if (!isActive_) return GaugeState::MISS;
+    if (!isVisible_) return GaugeState::MISS;
 
-    isActive_ = false; // ボタン押下で即停止
+	isMoving_ = false;  // バーの移動を停止
 
     // 現在位置 (barPosition_) と各ゾーンの範囲を判定
     if (barPosition_ >= redStart_ && barPosition_ <= redEnd_) {
@@ -150,5 +152,5 @@ void ActionGauge::Reset()
 {
     barPosition_ = 0.0f;
     barSpeed_ = 1.0f;
-    isActive_ = false;
+    isVisible_ = false;
 }

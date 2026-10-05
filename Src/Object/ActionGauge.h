@@ -41,16 +41,21 @@ public:
     void Draw();
     GaugeState PressButton();
 
-    bool IsActive() const { return isActive_; }
-    void Reset();
+    // 状態確認用
+    bool IsMoving() const { return isMoving_; }   // バーが動いているか
+    bool IsVisible() const { return isVisible_; } // 画面に表示されているか
+    void Hide() { isVisible_ = false; isMoving_ = false; } // ゲージを完全に非表示にする
+
+	void Reset();   //ゲージを初期状態に戻す
 
     static float GetResultRate(GaugeState state);
 
 private:
 
-    float barPosition_; // バーの現在位置 (0.0f ～ 1.0f)
-    float barSpeed_;    // 移動速度
-    bool  isActive_;    // 動作中フラグ
+    float barPosition_; //バーの現在位置 (0.0f ～ 1.0f)
+    float barSpeed_;    //移動速度
+    bool isVisible_;    //動作中フラグ
+    bool isMoving_;     //バーを動かすかどうか（移動フラグ）
 
     // 各判定ゾーンの領域（開始・終了比率 0.0f ～ 1.0f）
     float greenStart_, greenEnd_;

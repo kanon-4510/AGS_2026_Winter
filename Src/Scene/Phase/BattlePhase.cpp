@@ -47,6 +47,8 @@ void BattlePhase::Draw(void)
 {
 	DrawFormatString(100, 50, 0xFFFFFF, "Battle Turn: %d", battleTurnCnt_);
 	DrawString(100, 100, "Battle Phase", GetColor(255, 0, 0));
+	DrawFormatString(700, 120, 0xFFFFFF, "Enemy HP: %d", EnemyHP);
+
 	// メッセージ枠およびアクションゲージの描画領域指定（例: 画面下部）
 	int winX = 100, winY = 360, winW = 600, winH = 180;
 
@@ -129,7 +131,7 @@ void BattlePhase::UpdateEnemyTurn(void)
 		player_->Damage(10); // 仮のダメージ計算例
 	}
 	// 時間切れ（ガード失敗）
-	else if (!actionGauge_.IsActive())
+	else if (!actionGauge_.IsVisible())
 	{
 	}
 
@@ -169,34 +171,33 @@ void BattlePhase::DrawEnemyTrun(void)
 
 void BattlePhase::ProsesSelectAttack(void)
 {
-	// DeltaTime（ここでは1フレーム約1/60秒固定値として渡す例）
-	float deltaTime = 1.0f / 60.0f;
-	actionGauge_.Update(deltaTime);
-
-	// タイミングよくボタンが押された場合
-	if (ins_.IsTrgDown(KEY_INPUT_SPACE))
+	// バーがまだ動いている最中の処理
+	if (actionGauge_.IsMoving())
 	{
-		GaugeState state = actionGauge_.PressButton();
-		float rate = ActionGauge::GetResultRate(state);
+		float deltaTime = 1.0f / 60.0f;
+		actionGauge_.Update(deltaTime);
 
-		// TODO: ダメージ処理を記述（例: gameScene_.GetEnemy().Damage(...)）
-		player_->Attack(rate);
+		if (ins_.IsTrgDown(KEY_INPUT_SPACE))
+		{
+			// ボタンが押されたらバーがその場に止まる（表示は残る）
+			GaugeState state = actionGauge_.PressButton();
+			float rate = ActionGauge::GetResultRate(state);
+			int power = player_->Attack(rate);
 
-		// 攻撃終了後は敵のターンへ（仮の判定倍率で防御ゲージ開始）
-		actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
+			EnemyHP -= power; // 仮のダメージ計算例
+		}
 	}
-	// 時間切れ（押さずにバーが一往復して停止した場合）
-	else if (!actionGauge_.IsActive())
+	// バーが止まった後の処理（止まったバーが画面に見えている状態）
+	else
 	{
-		// MISS扱いとして敵のターンへ
-		actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
-		
-	}
+		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+		{
+			battleTurnCnt_++;
 
-	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
-	{
-		battleTurnCnt_++;
-		battlePhase_ = ENEMY_TURN;
+			// 次のターン用ゲージを開始（ここで新しい表示・移動にリセットされる）
+			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
+			battlePhase_ = ENEMY_TURN;
+		}
 	}
 }
 
