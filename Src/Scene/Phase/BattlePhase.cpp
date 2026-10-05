@@ -117,28 +117,34 @@ void BattlePhase::UpdatePlayerTurn(void)
 
 void BattlePhase::UpdateEnemyTurn(void)
 {
-	float deltaTime = 1.0f / 60.0f;
-	actionGauge_.Update(deltaTime);
-
-	// タイミングよくボタンを押してガード
-	if (ins_.IsTrgDown(KEY_INPUT_SPACE))
+	//バーがまだ動いている最中の処理
+	if (actionGauge_.IsMoving())
 	{
-		GaugeState state = actionGauge_.PressButton();
-		float guardRate = ActionGauge::GetResultRate(state);
+		float deltaTime = 1.0f / 60.0f;
+		actionGauge_.Update(deltaTime);
 
-		// TODO: 被ダメージ処理を記述
-		player_->Defense(guardRate);
-		player_->Damage(10); // 仮のダメージ計算例
+		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+		{
+			//ボタンが押されたらバーがその場に止まる（表示は残る）
+			GaugeState state = actionGauge_.PressButton();
+			float rate = ActionGauge::GetResultRate(state);
+			player_->Defense(rate);
+			player_->Damage(10); // 仮のダメージ計算例
+		}
 	}
-	// 時間切れ（ガード失敗）
-	else if (!actionGauge_.IsVisible())
+	// バーが止まった後の処理（止まったバーが画面に見えている状態）
+	else
 	{
-	}
+		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+		{
+			battleTurnCnt_++;
 
-	if(ins_.IsTrgDown(KEY_INPUT_RETURN))
-	{
-		battleTurnCnt_++;
-		battlePhase_ = COMMAND_SELECT;
+			actionGauge_.IsVisible(); // ゲージが表示されているか確認（必要に応じて処理を追加）
+			player_->Damage(10); // 仮のダメージ計算例
+			// 次のターン用ゲージを開始（ここで新しい表示・移動にリセットされる）
+			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
+			battlePhase_ = COMMAND_SELECT;
+		}
 	}
 }
 
@@ -177,7 +183,7 @@ void BattlePhase::ProsesSelectAttack(void)
 		float deltaTime = 1.0f / 60.0f;
 		actionGauge_.Update(deltaTime);
 
-		if (ins_.IsTrgDown(KEY_INPUT_SPACE))
+		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
 			// ボタンが押されたらバーがその場に止まる（表示は残る）
 			GaugeState state = actionGauge_.PressButton();
