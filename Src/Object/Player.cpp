@@ -23,7 +23,7 @@ void Player::Draw()
 {
 	DrawFormatString(STATUS_X, BASE_Y, STATUS_COLOR, "ATK: %d", hp_);
 	DrawFormatString(STATUS_X, BASE_Y+20, STATUS_COLOR, "ATK: %d", power_);
-	DrawFormatString(STATUS_X, BASE_Y+40, STATUS_COLOR, "DEF: %d", defense_);
+	DrawFormatString(STATUS_X, BASE_Y+40, STATUS_COLOR, "DEF: %.2f", defense_);
 }
 
 float Player::Attack(float power)
@@ -54,7 +54,7 @@ void Player::FullHeal()
 void Player::Damage(int damage)
 {
 	//防御力を考慮してダメージを計算
-	hp_ -= damage * defense_;
+	hp_ -=damage - (damage * defense_);
 
 	if (hp_ <= 0)
 	{
