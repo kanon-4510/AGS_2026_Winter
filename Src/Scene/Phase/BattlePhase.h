@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+#include <string>
 #include "../../Manager/InputManager.h"
 #include"../../Object/ActionGauge.h"
 #include "PhaseBase.h"
@@ -43,6 +45,8 @@ private:
 	GameScene& gameScene_;			//親の情報を渡す
 	std::unique_ptr<Player> player_;	//プレイヤーの情報を渡す
 	ActionGauge actionGauge_;		//アクションゲージ
+
+	std::string currentMessage_; // 現在表示するメッセージ
 
 	BATTLE_PHASE battlePhase_;		//バトルフェーズの種類
 	COMMAND_TYPE commandType_;		//コマンドの種類

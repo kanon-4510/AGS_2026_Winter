@@ -1,4 +1,6 @@
 #include <DxLib.h>
+#include <string>
+#include "../../Manager/InputManager.h"
 #include "../GameScene.h"
 #include "../../Object/Player.h"
 #include "BattlePhase.h"
@@ -211,6 +213,8 @@ void BattlePhase::ProsesSelectTalk(void)
 {
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
+		currentMessage_ = "話すコマンドが選択されました";
+
 		battleTurnCnt_++;
 		//battlePhase_ = COMMAND_SELECT;
 		actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
