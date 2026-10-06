@@ -7,6 +7,7 @@
 
 class GameScene;
 class Player;
+class Enemy;
 
 class BattlePhase : public PhaseBase
 {
@@ -44,6 +45,7 @@ private:
 
 	GameScene& gameScene_;			//親の情報を渡す
 	std::unique_ptr<Player> player_;	//プレイヤーの情報を渡す
+	std::unique_ptr<Enemy> enemy_;		//敵の情報を渡す
 	ActionGauge actionGauge_;		//アクションゲージ
 
 	std::string currentMessage_; // 現在表示するメッセージ

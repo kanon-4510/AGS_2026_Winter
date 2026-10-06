@@ -3,6 +3,7 @@
 #include "../../Manager/InputManager.h"
 #include "../GameScene.h"
 #include "../../Object/Player.h"
+#include "../../Object/Enemy.h"
 #include "BattlePhase.h"
 
 BattlePhase::BattlePhase(GameScene& gameScene)
@@ -23,10 +24,19 @@ void BattlePhase::Init(void)
 {
 	player_ = std::make_unique<Player>();
 	player_->Init();
+
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->Init(Enemy::TYPE::DARKKNIGHT);
 }
 
 void BattlePhase::Update(void)
 {
+	// 敵の更新
+	if (enemy_)
+	{
+		enemy_->Update();
+	}
+
 	//フェーズごとの更新処理を呼び出す
 	switch (battlePhase_)
 	{
@@ -56,6 +66,12 @@ void BattlePhase::Draw(void)
 
 	//アクションゲージ枠（常時表示）
 	actionGauge_.Draw();
+
+	// 敵を描画
+	if (enemy_)
+	{
+		enemy_->Draw();
+	}
 
 	player_->Draw();
 
