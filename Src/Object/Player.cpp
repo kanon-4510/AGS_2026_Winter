@@ -12,7 +12,6 @@ void Player::Init()
 	hp_ = maxHp_;
 	power_ = POWER;
 	defense_ = 0.0f;
-	heal_ = 2;
 }
 
 void Player::Update()
@@ -38,11 +37,16 @@ float Player::Defense(float defense)
 	return defense_ = defense;
 }
 
-void Player::Heal(int amount)
+void Player::Heal()
 {
-	if (hp_ > GetMaxHp()) 
+	//HP‚ªÅ‘å’l‚ð’´‚¦‚È‚¢‚æ‚¤‚É40%‰ñ•œ‚·‚é
+	if(hp_ + (maxHp_ * heal_) > maxHp_)
 	{
-		hp_ = GetMaxHp();
+		hp_ = maxHp_;
+	}
+	else
+	{
+		hp_ += (maxHp_ * heal_);
 	}
 }
 
