@@ -43,7 +43,7 @@ public:
 	float Defense(float defense);//–hŒäˆ—
 
 	//‰ñ•œˆ—
-	void Heal(int amount);
+	void Heal();
 	void FullHeal();
 
 	void LevelUp();//ƒŒƒxƒ‹ƒAƒbƒvˆ—
@@ -60,6 +60,6 @@ private:
 	int power_ = POWER;		//UŒ‚—Í
 	float defense_ = 0.0f;	//–hŒä—Í
 
-	int heal_ = 2;			//‰ñ•œ—Ê
+	float heal_ = 0.4f;			//‰ñ•œ—Ê
 
 };
