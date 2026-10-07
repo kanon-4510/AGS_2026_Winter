@@ -12,6 +12,7 @@ BattlePhase::BattlePhase(GameScene& gameScene)
 	battlePhase_ = COMMAND_SELECT;
 	commandType_ = ATTACK;
 	battleTurnCnt_ = 1;
+	selectedIndex_ = 0;
 	actionGauge_.Reset();
 }
 
@@ -98,22 +99,37 @@ void BattlePhase::Release(void)
 
 void BattlePhase::UpdateCommandSelect(void)
 {
-	// キーが押されたときだけ各コマンド処理を呼び出す
-	if (ins_.IsTrgDown(KEY_INPUT_A))
+	//十字キーでコマンド選択を行う処理
+	if (ins_.IsTrgDown(KEY_INPUT_RIGHT))
 	{
-		commandType_ = ATTACK;
-		battlePhase_ = PLAYER_TURN;
-		actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH); // 攻撃ゲージ開始
+		selectedIndex_ = (selectedIndex_ + 1) % MAX_COMMANDS;
 	}
-	else if (ins_.IsTrgDown(KEY_INPUT_S))
+	else if(ins_.IsTrgDown(KEY_INPUT_LEFT))
 	{
-		commandType_ = TALK;
-		battlePhase_ = PLAYER_TURN;
+		selectedIndex_ = (selectedIndex_ - 1 + MAX_COMMANDS) % MAX_COMMANDS;
 	}
-	else if (ins_.IsTrgDown(KEY_INPUT_D))
+
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		commandType_ = RUN;
-		battlePhase_ = PLAYER_TURN;
+		// キーが押されたときだけ各コマンド処理を呼び出す
+		if (selectedIndex_ == 0)
+		{
+			commandType_ = ATTACK;
+			battlePhase_ = PLAYER_TURN;
+			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH); // 攻撃ゲージ開始
+		}
+		else if (selectedIndex_ == 1)
+		{
+			commandType_ = TALK;
+			battlePhase_ = PLAYER_TURN;
+		}
+		else if (selectedIndex_ == 2)
+		{
+			commandType_ = RUN;
+			battlePhase_ = PLAYER_TURN;
+		}
+
+		selectedIndex_ = 0;
 	}
 }
 
@@ -185,7 +201,8 @@ void BattlePhase::UpdateBattleEnd(void)
 void BattlePhase::DrawCommandSelect(void)
 {
 	//コマンド選択の描画処理
-	DrawString(GameScene::COMMAND_MENU_X, GameScene::COMMAND_MENU_Y, "1.こうげき　2.はなす　3.にげる", GetColor(255, 255, 255));
+	DrawString(GameScene::COMMAND_MENU_X, GameScene::COMMAND_MENU_Y, "こうげき　　　　はなす　　　　 にげる", GetColor(255, 255, 255));
+	DrawFormatString(ARROW_POS_X + ARROW_OFFSET * selectedIndex_, GameScene::COMMAND_MENU_Y, 0xffffff, "→");
 }
 
 void BattlePhase::DrawPlayerTrun(void)

@@ -20,9 +20,9 @@ void Player::Update()
 
 void Player::Draw()
 {
-	DrawFormatString(STATUS_X, BASE_Y, STATUS_COLOR, "HP: %d", hp_);
-	DrawFormatString(STATUS_X, BASE_Y+20, STATUS_COLOR, "ATK: %d", power_);
-	DrawFormatString(STATUS_X, BASE_Y+40, STATUS_COLOR, "DEF: %.1f", defense_);
+	DrawFormatString(STATUS_X, STATUS_Y, STATUS_COLOR, "HP: %d", hp_);
+	DrawFormatString(STATUS_X + STATUS_OFFSET, STATUS_Y, STATUS_COLOR, "ATK: %d", power_);
+	//DrawFormatString(STATUS_X, BASE_Y+40, STATUS_COLOR, "DEF: %.1f", defense_);
 }
 
 float Player::Attack(float power)
