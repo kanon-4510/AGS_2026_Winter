@@ -1,0 +1,3 @@
+scene_id,phase,ending_type,speaer,text,is_battle
+wave_01,0,0,プレイヤー,　　　　,1
+fork_01,1,0,　　　　,分かれ道のようだ...,1
