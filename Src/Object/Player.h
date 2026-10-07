@@ -6,19 +6,19 @@ class Player
 {
 public:
 
-	constexpr static int FONT_SIZE = 20;			//fontサイズ
+	static constexpr int FONT_SIZE = 20;			//fontサイズ
 
-	constexpr static int STATUS_X = 450;			//ステータスの描画位置X
-	constexpr static int STATUS_COLOR = 0xFFFFFF;	//ステータスの描画色
+	static constexpr int STATUS_X = 520;			//ステータスの描画位置X
+	static constexpr int STATUS_Y = 550;			//ステータスの描画位置Y
+	static constexpr int STATUS_OFFSET = 120;		//ステータスのオフセット
+	static constexpr int STATUS_COLOR = 0xFFFFFF;	//ステータスの描画色
 
-	constexpr static int PLAYER_POS_X = 900;	//プレイヤーの描画位置X
-	constexpr static int PLAYER_POS_Y = 240;	//プレイヤーの描画位置Y
+	static constexpr int PLAYER_POS_X = 900;	//プレイヤーの描画位置X
+	static constexpr int PLAYER_POS_Y = 240;	//プレイヤーの描画位置Y
 
-	constexpr static int ANIM_COUNT_ATTACK = 5;	//アニメーションのフレーム数
-	constexpr static int ANIM_COUNT_DAMAGE = 10;	//アニメーションのフレーム数
-	constexpr static int ANIM_MOVE_PIXELS = 3;	//動かすピクセル数
-
-	static constexpr int BASE_Y = 600;		//ステータスの描画位置Y
+	static constexpr int ANIM_COUNT_ATTACK = 5;	//アニメーションのフレーム数
+	static constexpr int ANIM_COUNT_DAMAGE = 10;	//アニメーションのフレーム数
+	static constexpr int ANIM_MOVE_PIXELS = 3;	//動かすピクセル数
 
 	//プレイヤーのステータス
 	static constexpr int MAX_HP = 100;        // ステータス名の描画X座標
