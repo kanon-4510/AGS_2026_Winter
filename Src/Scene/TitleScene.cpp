@@ -35,10 +35,6 @@ void TitleScene::Update(void)
 		ProcessTitleDecision();
 		ProcessTitleSelection();
 	}
-	else if(mode_ == TITLE_MODE::TUTORIAL)
-	{
-		Tutorial();
-	}
 	else if (mode_ == TITLE_MODE::EXIT)
 	{
 		ExitGame();
@@ -54,24 +50,11 @@ void TitleScene::Draw(void)
 	if (mode_ == TITLE_MODE::NORMAL)
 	{
 		//ゲームをするか終了するか
-		DrawString(ARROW_X, ARROW_Y + normalOffset_, "→",Color::WHITE);
+		DrawString(ARROW_X, ARROW_Y + normalOffset_, "→", Color::WHITE);
 
 		DrawString(TITLE_MESSAGE_X, TITLE_MESSAGE_Y, "ゲーム開始", Color::WHITE);
 
 		DrawString(TITLE_MESSAGE_X, Application::SCREEN_SIZE_Y - 100, "ゲーム終了", Color::WHITE);
-	}
-	else if (mode_ == TITLE_MODE::TUTORIAL)
-	{
-		//ゲームを始めるか、チュートリアルをON・OFFするか
-		DrawFormatString(ARROW_X - tutorialOffsetX_, ARROW_Y + tutorialOffsetY_, Color::WHITE, "→");
-
-		if (SceneManager::GetInstance().IsTutorialEnabled()) {
-			DrawString(TUTORIAL_TEXT_X, TUTORIAL_TEXT_Y, "チュートリアル：【 ON 】", Color::WHITE);
-		}
-		else {
-			DrawString(TUTORIAL_TEXT_X, TUTORIAL_TEXT_Y, "チュートリアル：【 OFF 】", Color::WHITE);
-		}
-		DrawString(TITLE_MESSAGE_X, TITLE_MESSAGE_Y, "ゲーム開始", Color::WHITE);
 	}
 	else if (mode_ == TITLE_MODE::EXIT)
 	{
@@ -115,16 +98,17 @@ void TitleScene::ProcessTitleSelection(void)
 
 void TitleScene::ProcessTitleDecision(void)
 {
-	if(ins_.IsTrgDown(KEY_INPUT_RETURN) ||
-		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DOWN))
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN) ||ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1,InputManager::JOYPAD_BTN::DOWN))
 	{
 		//選択音
-		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::ONCE);
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE,Sound::TIMES::ONCE);
 
 		switch (titleSelection_)
 		{
 		case TitleScene::START_GAME:
-			mode_ = TITLE_MODE::TUTORIAL;
+
+			//ゲームシーンへ遷移
+			SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
 			break;
 		case TitleScene::EXIT_GAME:
 			mode_ = TITLE_MODE::EXIT;
@@ -193,7 +177,7 @@ void TitleScene::ExitGame(void)
 	}
 
 	//最終決定
-	if (ins_.IsTrgDown(KEY_INPUT_RETURN) || 
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN) ||
 		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DOWN))
 	{
 		//選択音
