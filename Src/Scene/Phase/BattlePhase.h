@@ -31,6 +31,11 @@ public:
 
 	static constexpr int RUN_SUCCESS_RATE = 0;	//逃げれる確率(%)
 
+	static constexpr int MAX_COMMANDS = 3;		//コマンドの最大数
+
+	static constexpr int ARROW_POS_X = 430; //矢印の表示位置
+	static constexpr int ARROW_OFFSET = 130; //矢印のオフセット
+
 	int EnemyHP = 100;	//敵のHP
 
 	BattlePhase(GameScene& gameScene);
@@ -56,6 +61,8 @@ private:
 	bool isBarActive_ = false;				//アクションゲージが動いているかどうか
 
 	int battleTurnCnt_;				//バトルのターン数をカウント
+
+	int selectedIndex_ = 0;			//選択中のコマンドのインデックス
 
 	void UpdateCommandSelect(void);	//コマンド選択の更新処理
 	void UpdatePlayerTurn(void);	//プレイヤーのターンの更新処理
