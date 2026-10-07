@@ -65,7 +65,7 @@ void Player::LevelUp()
 void Player::Damage(int damage)
 {
 	//防御力を考慮してダメージを計算
-	hp_ -= damage * defense_;
+	hp_ -= damage - (damage * defense_);
 
 	if (hp_ <= 0)
 	{
