@@ -59,7 +59,7 @@ void BattlePhase::Draw(void)
 {
 	DrawFormatString(100, 50, 0xFFFFFF, "Battle Turn: %d", battleTurnCnt_);
 	DrawString(100, 100, "Battle Phase", GetColor(255, 0, 0));
-	DrawFormatString(700, 120, 0xFFFFFF, "Enemy HP: %d", EnemyHP);
+	DrawFormatString(700,120,0xFFFFFF,"Enemy HP: %d",enemy_->GetHP());
 
 	// メッセージ枠およびアクションゲージの描画領域指定（例: 画面下部）
 	int winX = 100, winY = 360, winW = 600, winH = 180;
@@ -135,7 +135,7 @@ void BattlePhase::UpdatePlayerTurn(void)
 
 void BattlePhase::UpdateEnemyTurn(void)
 {
-	//バーがまだ動いている最中の処理
+	// バーがまだ動いている最中
 	if (actionGauge_.IsMoving())
 	{
 		float deltaTime = 1.0f / 60.0f;
@@ -143,24 +143,32 @@ void BattlePhase::UpdateEnemyTurn(void)
 
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
-			//ボタンが押されたらバーがその場に止まる（表示は残る）
+			// ゲージを止める
 			GaugeState state = actionGauge_.PressButton();
+
+			// 防御率を取得
 			float rate = ActionGauge::GetResultRate(state);
+
+			// 防御処理
 			player_->Defense(rate);
-			player_->Damage(10); // 仮のダメージ計算例
+
+			// 敵の攻撃力を使ってダメージ計算
+			player_->Damage(enemy_->GetATK());
 		}
 	}
-	// バーが止まった後の処理（止まったバーが画面に見えている状態）
+	// バーが止まった後
 	else
 	{
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
 			battleTurnCnt_++;
 
-			actionGauge_.IsVisible(); // ゲージが表示されているか確認（必要に応じて処理を追加）
-			player_->Damage(10); // 仮のダメージ計算例
-			// 次のターン用ゲージを開始（ここで新しい表示・移動にリセットされる）
-			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
+			actionGauge_.Start(
+				ActionGauge::BASE_GOOD_WIDTH,
+				ActionGauge::BASE_GREAT_WIDTH,
+				ActionGauge::BASE_PERFECT_WIDTH
+			);
+
 			battlePhase_ = COMMAND_SELECT;
 		}
 	}
@@ -203,23 +211,38 @@ void BattlePhase::ProsesSelectAttack(void)
 
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
-			// ボタンが押されたらバーがその場に止まる（表示は残る）
+			// ボタンが押されたらバーがその場に止まる
 			GaugeState state = actionGauge_.PressButton();
+
 			float rate = ActionGauge::GetResultRate(state);
+
 			int power = player_->Attack(rate);
 
-			EnemyHP -= power; // 仮のダメージ計算例
+			// 敵にダメージを与える
+			enemy_->Damage(power);
 		}
 	}
-	// バーが止まった後の処理（止まったバーが画面に見えている状態）
+	// バーが止まった後の処理
 	else
 	{
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
+			// 敵を倒していたらバトル終了
+			if (enemy_->IsDead())
+			{
+				battlePhase_ = BATTLE_END;
+				return;
+			}
+
 			battleTurnCnt_++;
 
-			// 次のターン用ゲージを開始（ここで新しい表示・移動にリセットされる）
-			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
+			// 次のターン用ゲージを開始
+			actionGauge_.Start(
+				ActionGauge::BASE_GOOD_WIDTH,
+				ActionGauge::BASE_GREAT_WIDTH,
+				ActionGauge::BASE_PERFECT_WIDTH
+			);
+
 			battlePhase_ = ENEMY_TURN;
 		}
 	}

@@ -45,7 +45,6 @@ public:
 	enum class TITLE_MODE
 	{
 		NORMAL,		//通常モード
-		TUTORIAL,	//チュートリアルモード
 		EXIT,		//終了確認モード
 	};
 
