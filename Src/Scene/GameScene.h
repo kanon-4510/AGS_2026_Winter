@@ -50,6 +50,14 @@ public:
 
 	void ChangePhase(QUEST_PHASE phase);	//フェーズの変更
 
+	int GetWaveCount(void) const;			//wavecount取得
+
+	void StartNextBattle(void);
+
+	void NextWave(void);
+	bool IsEnemyUsed(int index) const;
+	void SetEnemyUsed(int index);
+
 private:
 
 	InputManager& ins_ = InputManager::GetInstance();
@@ -58,7 +66,10 @@ private:
 	std::unique_ptr<BattlePhase> battlePhase_;
 
 	QUEST_PHASE questPhase_;	//クエストのフェーズ
-	int turn_;			//現在のターン数
+	int waveCount_ = 1;			//現在のターン数
+	bool usedEnemies_[7] = {};
+
+	bool hasStartedBattle_ = false;
 
 	int playerImg_; //プレイヤーの画像ハンドル
 	int stageImg_;  //ステージの画像ハンドル

@@ -71,3 +71,42 @@ void GameScene::ChangePhase(QUEST_PHASE phase)
 		phase_->Init();
 	}
 }
+
+int GameScene::GetWaveCount(void) const
+{
+	return waveCount_;
+}
+
+void GameScene::StartNextBattle(void)
+{
+	if (hasStartedBattle_)
+	{
+		if (waveCount_ < 5)
+		{
+			waveCount_++;
+		}
+	}
+	else
+	{
+		hasStartedBattle_ = true;
+	}
+}
+
+
+void GameScene::NextWave(void)
+{
+	if (waveCount_ < 5)
+	{
+		waveCount_++;
+	}
+}
+
+bool GameScene::IsEnemyUsed(int index) const
+{
+	return usedEnemies_[index];
+}
+
+void GameScene::SetEnemyUsed(int index)
+{
+	usedEnemies_[index] = true;
+}

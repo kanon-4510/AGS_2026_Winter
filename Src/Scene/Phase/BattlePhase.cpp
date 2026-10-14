@@ -12,6 +12,12 @@ BattlePhase::BattlePhase(GameScene& gameScene)
 	battlePhase_ = COMMAND_SELECT;
 	commandType_ = ATTACK;
 	battleTurnCnt_ = 1;
+
+	for (int i = 0; i < 7; i++)
+	{
+		usedEnemies_[i] = false;
+	}
+
 	actionGauge_.Reset();
 }
 
@@ -26,7 +32,7 @@ void BattlePhase::Init(void)
 	player_->Init();
 
 	enemy_ = std::make_unique<Enemy>();
-	enemy_->Init(Enemy::TYPE::DARKKNIGHT);
+	SpawnEnemy();
 }
 
 void BattlePhase::Update(void)
@@ -94,6 +100,67 @@ void BattlePhase::Draw(void)
 
 void BattlePhase::Release(void)
 {
+}
+
+void BattlePhase::SpawnEnemy()
+{
+	Enemy::TYPE type;
+
+	// GameSceneから現在の戦闘回数を取得
+	int wave = gameScene_.GetWaveCount();
+
+	// カエル
+	if (wave == 1)
+	{
+		type = Enemy::TYPE::FROG;
+		gameScene_.SetEnemyUsed(0);
+	}
+	// ボス
+
+	else if (wave == 5)
+	{
+		type = Enemy::TYPE::DEVIL;
+	}
+	// 2～4戦目は重複なしでランダム
+	else
+	{
+		int index;
+
+		do
+		{
+			index = GetRand(5) + 1;
+		} while (gameScene_.IsEnemyUsed(index));
+
+		gameScene_.SetEnemyUsed(index);
+
+		switch (index)
+		{
+		case 1:
+			type = Enemy::TYPE::GOBLIN;
+			break;
+		case 2:
+			type = Enemy::TYPE::REAPER;
+			break;
+		case 3:
+			type = Enemy::TYPE::SLIME;
+			break;
+		case 4:
+			type = Enemy::TYPE::DARKKNIGHT;
+			break;
+		case 5:
+			type = Enemy::TYPE::BAT;
+			break;
+		case 6:
+			type = Enemy::TYPE::DRAGON;
+			break;
+		default:
+			type = Enemy::TYPE::GOBLIN;
+			break;
+		}
+	}
+
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->Init(type);
 }
 
 void BattlePhase::UpdateCommandSelect(void)
@@ -225,26 +292,36 @@ void BattlePhase::ProsesSelectAttack(void)
 	// バーが止まった後の処理
 	else
 	{
-		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
-		{
-			// 敵を倒していたらバトル終了
-			if (enemy_->IsDead())
-			{
-				battlePhase_ = BATTLE_END;
-				return;
-			}
+	    if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+    {
+        // 敵を倒していたら
+        if (enemy_->IsDead())
+        {
+            // 5戦目のボスを倒したらゲームクリア
+            if (gameScene_.GetWaveCount() == 5)
+            {
+                // ゲームクリア用のフェーズへ移動
+                gameScene_.ChangePhase(
+                    GameScene::QUEST_PHASE::PHASE_STORY
+                );
+                return;
+            }
 
-			battleTurnCnt_++;
+            // 5戦目以外なら戦闘終了
+            battlePhase_ = BATTLE_END;
+            return;
+        }
 
-			// 次のターン用ゲージを開始
-			actionGauge_.Start(
-				ActionGauge::BASE_GOOD_WIDTH,
-				ActionGauge::BASE_GREAT_WIDTH,
-				ActionGauge::BASE_PERFECT_WIDTH
-			);
+        battleTurnCnt_++;
 
-			battlePhase_ = ENEMY_TURN;
-		}
+        actionGauge_.Start(
+            ActionGauge::BASE_GOOD_WIDTH,
+            ActionGauge::BASE_GREAT_WIDTH,
+            ActionGauge::BASE_PERFECT_WIDTH
+        );
+
+        battlePhase_ = ENEMY_TURN;
+    }
 	}
 }
 
