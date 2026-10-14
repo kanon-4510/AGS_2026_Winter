@@ -69,7 +69,11 @@ void StoryPhase::UpdateSelectRoute(void)
 	if (ins_.IsTrgDown(KEY_INPUT_LEFT)
 		|| ins_.IsTrgDown(KEY_INPUT_RIGHT))
 	{
-		gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
+		gameScene_.StartNextBattle();
+
+		gameScene_.ChangePhase(
+			GameScene::QUEST_PHASE::PHASE_BATTLE
+		);
 	}
 }
 
