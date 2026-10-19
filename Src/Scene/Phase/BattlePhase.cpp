@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include <string>
 #include "../../Manager/InputManager.h"
+#include "../../Manager/ResourceManager.h"
 #include "../GameScene.h"
 #include "../../Object/Player.h"
 #include "../../Object/Enemy.h"
@@ -34,6 +35,10 @@ void BattlePhase::Init(void)
 
 	enemy_ = std::make_unique<Enemy>();
 	SpawnEnemy();
+
+	attackImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_ATTACK).handleId_;
+	talkImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_TALK).handleId_;
+	escapeImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_ESCAPE).handleId_;
 }
 
 void BattlePhase::Update(void)
@@ -268,7 +273,9 @@ void BattlePhase::UpdateBattleEnd(void)
 void BattlePhase::DrawCommandSelect(void)
 {
 	//コマンド選択の描画処理
-	DrawString(GameScene::COMMAND_MENU_X, GameScene::COMMAND_MENU_Y, "こうげき　　　　はなす　　　　 にげる", GetColor(255, 255, 255));
+	DrawGraph(GameScene::COMMAND_ATTACK_X, GameScene::COMMAND_MENU_Y, attackImage_, true);
+	DrawGraph(GameScene::COMMAND_TALK_X, GameScene::COMMAND_MENU_Y, talkImage_, true);
+	DrawGraph(GameScene::COMMAND_ESCAPE_X, GameScene::COMMAND_MENU_Y, escapeImage_, true);
 	DrawFormatString(ARROW_POS_X + ARROW_OFFSET * selectedIndex_, GameScene::COMMAND_MENU_Y, 0xffffff, "→");
 }
 

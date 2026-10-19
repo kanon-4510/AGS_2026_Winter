@@ -29,6 +29,10 @@ public:
 		BOOK,
 		//メッセージボックス
 		MESSAGE_BOX,
+		//コマンドメニュー
+		COMMAND_ATTACK,
+		COMMAND_TALK,
+		COMMAND_ESCAPE,
 	};
 
 	// 明示的にインステンスを生成する

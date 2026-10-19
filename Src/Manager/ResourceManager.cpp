@@ -68,6 +68,17 @@ void ResourceManager::Init(void)
 	//------------------------------------
 	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + "MS_Box.png");
 	resourcesMap_.emplace(SRC::MESSAGE_BOX, std::move(res));
+	//コマンドメニュー
+	//------------------------------------
+	//攻撃
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + "UI/Attack.png");
+	resourcesMap_.emplace(SRC::COMMAND_ATTACK, std::move(res));
+	//会話
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + "UI/Talk.png");
+	resourcesMap_.emplace(SRC::COMMAND_TALK, std::move(res));
+	//逃走
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + "UI/Escape.png");
+	resourcesMap_.emplace(SRC::COMMAND_ESCAPE, std::move(res));
 }
 
 void ResourceManager::Release(void)
