@@ -33,8 +33,8 @@ public:
 
 	static constexpr int MAX_COMMANDS = 3;		//コマンドの最大数
 
-	static constexpr int ARROW_POS_X = 430; //矢印の表示位置
-	static constexpr int ARROW_OFFSET = 130; //矢印のオフセット
+	static constexpr int ARROW_POS_X = 295; //矢印の表示位置
+	static constexpr int ARROW_OFFSET = 225; //矢印のオフセット
 
 	int EnemyHP = 100;	//敵のHP
 
@@ -58,11 +58,19 @@ private:
 	BATTLE_PHASE battlePhase_;		//バトルフェーズの種類
 	COMMAND_TYPE commandType_;		//コマンドの種類
 
-	bool isBarActive_ = false;				//アクションゲージが動いているかどうか
+	bool isBarActive_ = false;		//アクションゲージが動いているかどうか
 
-	int battleTurnCnt_;				//バトルのターン数をカウント
+	bool usedEnemies_[7];			// 出現済みの敵を管理
+
+	int battleTurnCnt_;				// バトルのターン数をカウント
+
+	void SpawnEnemy();				// 敵の初期化処理
 
 	int selectedIndex_ = 0;			//選択中のコマンドのインデックス
+
+	int attackImage_;				//攻撃画像
+	int talkImage_;					//会話画像
+	int escapeImage_;				//逃走画像
 
 	void UpdateCommandSelect(void);	//コマンド選択の更新処理
 	void UpdatePlayerTurn(void);	//プレイヤーのターンの更新処理
@@ -76,4 +84,5 @@ private:
 	void ProsesSelectAttack(void);	//攻撃コマンドの処理
 	void ProsesSelectTalk(void);	//話すコマンドの処理
 	void ProsesSelectRun(void);		//逃げるコマンドの処理
+
 };

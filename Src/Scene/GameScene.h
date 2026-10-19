@@ -32,8 +32,10 @@ public:
 	static constexpr int ROUTE_TEXT_X = 200;	//ルートの表示位置X
 	static constexpr int ROUTE_TEXT_Y = 400;	//ルートの表示位置Y
 	
-	static constexpr int COMMAND_MENU_X = 450;	//コマンドメニューの表示位置X
-	static constexpr int COMMAND_MENU_Y = 620;	//コマンドメニューの表示位置Y
+	static constexpr int COMMAND_ATTACK_X = 315;	//コマンドメニューの表示位置X
+	static constexpr int COMMAND_TALK_X = 540;		//コマンドメニューの表示位置X
+	static constexpr int COMMAND_ESCAPE_X = 765;	//コマンドメニューの表示位置X
+	static constexpr int COMMAND_MENU_Y = 620;		//コマンドメニューの表示位置Y
 	static constexpr int COMMAND_MENU_STEP_Y = 60;	//コマンドメニューの選択肢間隔Y
 	
 	static constexpr int PLAYER_IMG_X = 700;	//プレイヤーの画像表示位置X
@@ -50,6 +52,14 @@ public:
 
 	void ChangePhase(QUEST_PHASE phase);	//フェーズの変更
 
+	int GetWaveCount(void) const;			//wavecount取得
+
+	void StartNextBattle(void);
+
+	void NextWave(void);
+	bool IsEnemyUsed(int index) const;
+	void SetEnemyUsed(int index);
+
 private:
 
 	InputManager& ins_ = InputManager::GetInstance();
@@ -58,7 +68,10 @@ private:
 	std::unique_ptr<BattlePhase> battlePhase_;
 
 	QUEST_PHASE questPhase_;	//クエストのフェーズ
-	int turn_;			//現在のターン数
+	int waveCount_ = 1;			//現在のターン数
+	bool usedEnemies_[7] = {};
+
+	bool hasStartedBattle_ = false;
 
 	int playerImg_; //プレイヤーの画像ハンドル
 	int stageImg_;  //ステージの画像ハンドル
