@@ -113,7 +113,7 @@ void BattlePhase::SpawnEnemy()
 	// カエル
 	if (wave == 1)
 	{
-		type = Enemy::TYPE::FROG;
+		type = Enemy::TYPE::PIKO;
 		gameScene_.SetEnemyUsed(0);
 	}
 	// ボス
