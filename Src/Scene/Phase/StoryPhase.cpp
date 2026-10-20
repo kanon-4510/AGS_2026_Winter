@@ -39,6 +39,13 @@ void StoryPhase::Init()
 
 void StoryPhase::Update()
 {
+	// スペースキーで次の戦闘に進む(デバッグ)
+	if (ins_.IsTrgDown(KEY_INPUT_SPACE))
+	{
+		gameScene_.StartNextBattle();
+		gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
+		return;
+	}
 	switch (storyPhase_)
 	{
 	case StoryPhase::MAIN_STORY:
