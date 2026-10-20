@@ -7,6 +7,19 @@ class StoryPhase : public PhaseBase
 {
 public:
 
+	//ストーリーの種類
+	enum SCENARIO_TYPE
+	{
+		STORY_WAVE_1,
+		STORY_WAVE_2,
+		STORY_WAVE_3,
+		STORY_WAVE_4,
+		STORY_WAVE_5,
+		STORY_TRUE_END,
+		STORY_NORMAL_END,
+		STORY_ESCAPE_END,
+	};
+
 	//ストーリーフェーズの種類
 	enum STORY_PHASE
 	{
@@ -16,14 +29,15 @@ public:
 		MAX,			//最大値
 	};
 
-	//エンディングの種類
-	enum ENDING_TYPE
+	//ストーリーのデータ構造体
+	struct DialogueData
 	{
-		STORY_WAVE_START,   //通常のWave開始時テキスト
-		STORY_TRUE_END,     //トゥルーエンド
-		STORY_NORMAL_END,   //ノーマルエンド
-		STORY_ESCAPE_END,   //逃亡エンド
+		std::string speaker;  // 話者
+		std::string message;  // メッセージ
+		std::string eventTag; // イベントタグ
 	};
+
+	static constexpr int MAX_SCENARIO_TYPE = 8;
 
 	StoryPhase(GameScene& gameScene);
 	~StoryPhase();
@@ -31,6 +45,9 @@ public:
 	void Update(void)override;
 	void Draw(void)override;
 	void Release(void)override;
+
+	bool LoadScenario(SCENARIO_TYPE type);
+
 private:
 
 	InputManager& ins_ = InputManager::GetInstance();
@@ -38,7 +55,9 @@ private:
 	GameScene& gameScene_;			//親の情報を渡す
 
 	STORY_PHASE storyPhase_;		//ストーリーフェーズの種類
-	ENDING_TYPE endingType_;			//エンディングの種類
+
+	std::vector<DialogueData> dialogueList_;	//シナリオのデータを格納するリスト
+	int currentLineIndex_ = 0;					//現在のセリフのインデックス
 
 	void UpdateMainStory(void);		//メインストーリーの更新処理
 	void UpdateSelectRoute(void);	//次に進む道を選択するための関数
