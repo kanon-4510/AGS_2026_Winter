@@ -23,7 +23,8 @@ public:
 		DARKKNIGHT,
 		BAT,
 		DRAGON,
-		DEVIL
+		DEVIL,
+		PIKO
 	};
 
 	// ìGÇÃï\é¶ê›íË

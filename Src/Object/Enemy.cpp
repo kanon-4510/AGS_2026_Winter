@@ -75,6 +75,11 @@ void Enemy::Init(TYPE type)
 		atk_ = 30;
 		imageHandle_ = LoadGraph("Data/Enemy/Devil.png");
 		break;
+
+	case TYPE::PIKO:
+		maxHp_ = 999;
+		atk_ = 99;
+		imageHandle_ = LoadGraph("Data/Enemy/Piko.png");
 	}
 
 

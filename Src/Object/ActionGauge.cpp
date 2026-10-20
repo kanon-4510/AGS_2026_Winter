@@ -55,9 +55,16 @@ void ActionGauge::Start(float greenW, float yellowW, float redW, float speed)
     redEnd_ = redStart_ + redW; // param.redWidth ではなく redW
 
     barPosition_ = 0.0f;
-    barSpeed_ = speed; // param.speed ではなく speed
+
+    // 毎回ランダムな速度を設定
+    barPosition_ = 0.0f;
+
+    // バーの速度をランダムにする（0.8～1.5）
+    float randomSpeed = 0.8f + GetRand(70) / 100.0f;
+    barSpeed_ = randomSpeed;
+
     isVisible_ = true;
-    isMoving_ = true; // バーを動かす
+    isMoving_ = true;
 }
 
 void ActionGauge::Update(float deltaTime)
