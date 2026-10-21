@@ -251,12 +251,6 @@ void BattlePhase::UpdateEnemyTurn(void)
 		{
 			battleTurnCnt_++;
 
-			actionGauge_.Start(
-				ActionGauge::BASE_GOOD_WIDTH,
-				ActionGauge::BASE_GREAT_WIDTH,
-				ActionGauge::BASE_PERFECT_WIDTH
-			);
-
 			battlePhase_ = COMMAND_SELECT;
 		}
 	}
@@ -337,12 +331,6 @@ void BattlePhase::ProsesSelectAttack(void)
         }
 
         battleTurnCnt_++;
-
-        actionGauge_.Start(
-            ActionGauge::BASE_GOOD_WIDTH,
-            ActionGauge::BASE_GREAT_WIDTH,
-            ActionGauge::BASE_PERFECT_WIDTH
-        );
 
         battlePhase_ = ENEMY_TURN;
     }

@@ -5,7 +5,7 @@
 #include "../GameScene.h"
 #include "StoryPhase.h"
 
-// シナリオCSVファイルのパス定義（.csvに対応）
+//シナリオCSVファイルのパス定義（.csvに対応）
 const char* SCENARIO_FILE_PATHS[] = {
 	"Data/CSV/story_wave1.csv",
 	"Data/CSV/story_wave2.csv",
@@ -34,7 +34,7 @@ void StoryPhase::Init()
 	currentLineIndex_ = 0;
 
 	// 最初（Wave 1）のシナリオをロード
-	LoadScenario(STORY_WAVE_1);
+	LoadScenario(STORY_WAVE_2);
 }
 
 void StoryPhase::Update()
