@@ -13,6 +13,14 @@
 
 //デフォルトコンストラクタ
 GameScene::GameScene(void)
+:questPhase_(QUEST_PHASE::PHASE_STORY)
+, waveCount_(1)
+, hasStartedBattle_(false)
+, lastBattleResult_(BATTLE_RESULT::RESULT_ATTACK)
+, isReturnFromBattle_(false)
+, battleCount_(0)
+, talkCount_(0)
+, escapeCount_(0)
 {
 	questPhase_ = QUEST_PHASE::PHASE_STORY;
 
@@ -28,9 +36,24 @@ GameScene::~GameScene(void)
 void GameScene::Init(void)
 {
 	questPhase_ = QUEST_PHASE::PHASE_STORY;
+	waveCount_ = 1;
+	hasStartedBattle_ = false;
+	isReturnFromBattle_ = false;
+
+	// カウント初期化
+	battleCount_ = 0;
+	talkCount_ = 0;
+	escapeCount_ = 0;
+
+	for (int i = 0; i < 5; ++i)
+	{
+		usedEnemies_[i] = false;
+	}
 	playerImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::PLAYER).handleId_;
 	stageImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::GAME_SCENE).handleId_;
 	messageBoxImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::MESSAGE_BOX).handleId_;
+
+	ChangePhase(QUEST_PHASE::PHASE_STORY);
 }
 
 //更新処理
@@ -49,6 +72,7 @@ void GameScene::Draw(void)
 void GameScene::Release(void)
 {
 	SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
+	phase_->Release();
 }
 
 void GameScene::ChangePhase(QUEST_PHASE phase)
@@ -77,19 +101,52 @@ int GameScene::GetWaveCount(void) const
 	return waveCount_;
 }
 
+void GameScene::SetCurrentWave(int wave)
+{
+	waveCount_ = wave;
+}
+
 void GameScene::StartNextBattle(void)
 {
-	if (hasStartedBattle_)
+
+	hasStartedBattle_ = true;
+}
+
+void GameScene::RecordBattleResult(BATTLE_RESULT result)
+{
+	lastBattleResult_ = result;
+	isReturnFromBattle_ = true; // 戦闘復帰フラグON
+
+	switch (result)
 	{
-		if (waveCount_ < 5)
-		{
-			waveCount_++;
-		}
+	case BATTLE_RESULT::RESULT_ATTACK:
+		battleCount_++;
+		break;
+	case BATTLE_RESULT::RESULT_TALK:
+		talkCount_++;
+		break;
+	case BATTLE_RESULT::RESULT_ESCAPE:
+		escapeCount_++;
+		break;
 	}
-	else
+}
+
+GameScene::ENDING_TYPE GameScene::JudgeEndingType() const
+{
+	//逃走が3回以上なら逃走エンド
+	if (escapeCount_ >= 3)
 	{
-		hasStartedBattle_ = true;
+		return ENDING_TYPE::ENDING_ESCAPE;
 	}
+
+	//攻撃勝利が0回（一度も敵を倒していない）かつ「話す」解決が4回以上ならトゥルーエンド
+	if (battleCount_ == 0 && talkCount_ >= 4)
+	{
+		return ENDING_TYPE::ENDING_TRUE;
+	}
+
+	//それ以外（倒して進んだ）はノーマルエンド
+	return ENDING_TYPE::ENDING_NORMAL;
 }
 
 

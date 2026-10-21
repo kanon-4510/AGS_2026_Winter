@@ -307,46 +307,79 @@ void BattlePhase::ProsesSelectAttack(void)
 			enemy_->Damage(power);
 		}
 	}
-	// バーが止まった後の処理
 	else
 	{
-	    if (ins_.IsTrgDown(KEY_INPUT_RETURN))
-    {
-        // 敵を倒していたら
-        if (enemy_->IsDead())
-        {
-            // 5戦目のボスを倒したらゲームクリア
-            if (gameScene_.GetWaveCount() == 5)
-            {
-                // ゲームクリア用のフェーズへ移動
-                gameScene_.ChangePhase(
-                    GameScene::QUEST_PHASE::PHASE_STORY
-                );
-                return;
-            }
+		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+		{
+			 //敵を倒していた場合
+			if (enemy_->IsDead())
+			{
+				//攻撃撃破結果を GameScene に記録！
+				gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
 
-            // 5戦目以外なら戦闘終了
-            battlePhase_ = BATTLE_END;
-            return;
-        }
+				//戦闘終了画面へ移行
+				battlePhase_ = BATTLE_END;
+				return;
+			}
 
-        battleTurnCnt_++;
-
-        battlePhase_ = ENEMY_TURN;
-    }
+		}
+			battleTurnCnt_++;
+			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
+			battlePhase_ = ENEMY_TURN;
 	}
+	// バーが止まった後の処理
+	//else
+	//{
+	//    if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+ //   {
+ //       // 敵を倒していたら
+ //       if (enemy_->IsDead())
+ //       {
+ //           // 5戦目のボスを倒したらゲームクリア
+ //           if (gameScene_.GetWaveCount() == 5)
+ //           {
+ //               // ゲームクリア用のフェーズへ移動
+ //               gameScene_.ChangePhase(
+ //                   GameScene::QUEST_PHASE::PHASE_STORY
+ //               );
+ //               return;
+ //           }
+ //           // 5戦目以外なら戦闘終了
+ //           battlePhase_ = BATTLE_END;
+ //           return;
+ //       }
+ //       battleTurnCnt_++;
+ //       battlePhase_ = ENEMY_TURN;
+ //   }
+	//}
 }
 
 void BattlePhase::ProsesSelectTalk(void)
 {
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		currentMessage_ = "話すコマンドが選択されました";
+		if(enemy_->GetHP() == enemy_->GetMaxHP())
+		{
+			talkSuccessCount_++;
+		}
 
-		battleTurnCnt_++;
-		//battlePhase_ = COMMAND_SELECT;
-		actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
-		battlePhase_ = ENEMY_TURN;
+		if (talkSuccessCount_ >= 4)
+		{
+			currentMessage_ = "相手は戦意を喪失した！";
+
+			//説得完了で戦績記録 ＆ 戦闘終了
+			gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_TALK);
+			battlePhase_ = BATTLE_END;
+		}
+		else
+		{
+			currentMessage_ = "相手は少し話に耳を傾けている…";
+
+			// まだ回数が足りないので敵のターンへ
+			battleTurnCnt_++;
+			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
+			battlePhase_ = ENEMY_TURN;
+		}
 	}
 }
 
@@ -354,13 +387,18 @@ void BattlePhase::ProsesSelectRun(void)
 {
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		//ターンが経過するごとに逃げれる確率が下がる
+		// ターンが経過するごとに逃げられる確率が変わる
 		int runRate = RUN_SUCCESS_RATE + (battleTurnCnt_ * 5);
 
+		// 逃走成功判定（成功時）
 		if (runRate <= GetRand(99))
 		{
+			//逃走結果を GameScene に記録！
+			gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ESCAPE);
+
 			battlePhase_ = BATTLE_END;
 		}
+		// 失敗時
 		else
 		{
 			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);

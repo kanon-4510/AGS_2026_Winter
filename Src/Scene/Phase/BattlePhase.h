@@ -36,8 +36,6 @@ public:
 	static constexpr int ARROW_POS_X = 295; //矢印の表示位置
 	static constexpr int ARROW_OFFSET = 225; //矢印のオフセット
 
-	int EnemyHP = 100;	//敵のHP
-
 	BattlePhase(GameScene& gameScene);
 	~BattlePhase();
 	void Init(void)override;
@@ -60,9 +58,10 @@ private:
 
 	bool isBarActive_ = false;		//アクションゲージが動いているかどうか
 
-	bool usedEnemies_[7];			// 出現済みの敵を管理
+	bool usedEnemies_[7];			//出現済みの敵を管理
 
-	int battleTurnCnt_;				// バトルのターン数をカウント
+	int battleTurnCnt_;				//バトルのターン数をカウント
+	int talkSuccessCount_ = 0;		//現在の説得成功回数
 
 	void SpawnEnemy();				// 敵の初期化処理
 

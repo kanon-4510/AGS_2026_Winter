@@ -1,7 +1,6 @@
 #pragma once
 #include "PhaseBase.h"
-
-class GameScene;
+#include "../GameScene.h"
 
 class StoryPhase : public PhaseBase
 {
@@ -59,9 +58,12 @@ private:
 	std::vector<DialogueData> dialogueList_;	//シナリオのデータを格納するリスト
 	int currentLineIndex_ = 0;					//現在のセリフのインデックス
 
+	void OnReturnFromBattle(GameScene::BATTLE_RESULT result);
+
 	void UpdateMainStory(void);		//メインストーリーの更新処理
 	void UpdateSelectRoute(void);	//次に進む道を選択するための関数
 	void UpdateEnding(void);		//エンディングの更新処理
 
+	void JumpToTag(const std::string& targetTag);
 };
 

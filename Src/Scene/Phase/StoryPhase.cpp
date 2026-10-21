@@ -1,11 +1,11 @@
-#include <DxLib.h>
+﻿#include <DxLib.h>
 #include <fstream>
 #include "../../Utility/ASOUtility.h"
 #include "../../Manager/InputManager.h"
 #include "../GameScene.h"
 #include "StoryPhase.h"
 
-//�V�i���ICSV�t�@�C���̃p�X��`�i.csv�ɑΉ��j
+//シナリオCSVファイルのパス定義（.csvに対応）
 const char* SCENARIO_FILE_PATHS[] = {
 	"Data/CSV/story_wave1.csv",
 	"Data/CSV/story_wave2.csv",
@@ -31,15 +31,56 @@ StoryPhase::~StoryPhase()
 void StoryPhase::Init()
 {
 	storyPhase_ = MAIN_STORY;
-	currentLineIndex_ = 0;
 
-	// �ŏ��iWave 1�j�̃V�i���I�����[�h
-	LoadScenario(STORY_WAVE_2);
+	int currentWave = gameScene_.GetWaveCount(); // 現在のWave (1～5)
+
+	//戦闘からの復帰時
+	if (gameScene_.IsReturnFromBattle())
+	{
+		// 復帰フラグを下ろす
+		gameScene_.SetReturnFromBattle(false);
+
+		//ボス戦（Wave 5）終了後の判定ならエンディングCSVへ切り替え
+		if (currentWave == 5)
+		{
+			GameScene::ENDING_TYPE ending = gameScene_.JudgeEndingType();
+			switch (ending)
+			{
+			case GameScene::ENDING_TYPE::ENDING_NORMAL:
+				LoadScenario(STORY_NORMAL_END); // ending_normal.csv
+				break;
+			case GameScene::ENDING_TYPE::ENDING_ESCAPE:
+				LoadScenario(STORY_ESCAPE_END); // ending_escape.csv
+				break;
+			case GameScene::ENDING_TYPE::ENDING_TRUE:
+				LoadScenario(STORY_TRUE_END);   // ending_true.csv
+				break;
+			}
+			currentLineIndex_ = 0;
+			return;
+		}
+
+		//修正箇所：まず現在の Wave の CSV をロードして会話リスト（dialogueList_）を構築する！
+		SCENARIO_TYPE waveType = static_cast<SCENARIO_TYPE>(currentWave - 1);
+		LoadScenario(waveType);
+
+		// データが読み込まれた状態（dialogueList_ が入った状態）で分岐タグへジャンプ
+		GameScene::BATTLE_RESULT result = gameScene_.GetLastBattleResult();
+		OnReturnFromBattle(result);
+	}
+	//通常のシナリオ開始時（初回または次のWave進捗時）
+	else
+	{
+		// Wave数に対応するシナリオ（STORY_WAVE_1 〜 STORY_WAVE_5）をロード
+		SCENARIO_TYPE waveType = static_cast<SCENARIO_TYPE>(currentWave - 1);
+		LoadScenario(waveType);
+		currentLineIndex_ = 0;
+	}
 }
 
 void StoryPhase::Update()
 {
-	// �X�y�[�X�L�[�Ŏ��̐퓬�ɐi��(�f�o�b�O)
+	// スペースキーで次の戦闘に進む(デバッグ)
 	if (ins_.IsTrgDown(KEY_INPUT_SPACE))
 	{
 		gameScene_.StartNextBattle();
@@ -66,21 +107,21 @@ void StoryPhase::Draw()
 {
 	DrawString(100, 100, "Story Phase", 0xFFFFFF);
 
-	// �ǂݍ��ݍς݃f�[�^�̕`��e�X�g
+	// 読み込み済みデータの描画テスト
 	if (currentLineIndex_ < dialogueList_.size())
 	{
 		const auto& data = dialogueList_[currentLineIndex_];
 
-		// �b�҂̕`��
+		// 話者の描画
 		if (!data.speaker.empty())
 		{
-			DrawFormatString(100, 180, 0xFFFF00, "�y%s�z", data.speaker.c_str());
+			DrawFormatString(100, 180, 0xFFFF00, "【%s】", data.speaker.c_str());
 		}
 
-		// ���b�Z�[�W�̕`��
+		// メッセージの描画
 		DrawString(100, 210, data.message.c_str(), 0xFFFFFF);
 
-		// �f�o�b�O�p�i�C�x���g�^�O�\���j
+		// デバッグ用（イベントタグ表示）
 		if (!data.eventTag.empty())
 		{
 			DrawFormatString(100, 250, 0x888888, "Tag: %s", data.eventTag.c_str());
@@ -111,7 +152,7 @@ bool StoryPhase::LoadScenario(SCENARIO_TYPE type)
 	std::ifstream file(SCENARIO_FILE_PATHS[type]);
 	if (!file.is_open())
 	{
-		OutputDebugStringA("�G���[: �V�i���ICSV���J���܂���ł��� -> ");
+		OutputDebugStringA("エラー: シナリオCSVが開けませんでした -> ");
 		OutputDebugStringA(SCENARIO_FILE_PATHS[type]);
 		OutputDebugStringA("\n");
 		return false;
@@ -120,25 +161,25 @@ bool StoryPhase::LoadScenario(SCENARIO_TYPE type)
 	std::string line;
 	while (std::getline(file, line))
 	{
-		// ��s��w�b�_�[�s�i���O,���b�Z�[�W... / �b��,���b�Z�[�W...�j���X�L�b�v
-		if (line.empty() || line.find("���O,���b�Z�[�W") != std::string::npos || line.find("�b��,���b�Z�[�W") != std::string::npos)
+		// 空行やヘッダー行（名前,メッセージ... / 話者,メッセージ...）をスキップ
+		if (line.empty() || line.find("名前,メッセージ") != std::string::npos || line.find("話者,メッセージ") != std::string::npos)
 		{
 			continue;
 		}
 
-		// Windows���s�R�[�h(\r)�̏���
+		// Windows改行コード(\r)の除去
 		if (!line.empty() && line.back() == '\r')
 		{
 			line.pop_back();
 		}
 
-		// AsoUtility::Split ���g���ăJ���}�ŕ���
+		// AsoUtility::Split を使ってカンマで分割
 		std::vector<std::string> tokens = AsoUtility::Split(line, ',');
 
 		DialogueData data;
-		if (tokens.size() >= 1) data.speaker = tokens[0]; // ���O�E�b��
-		if (tokens.size() >= 2) data.message = tokens[1]; // ���b�Z�[�W
-		if (tokens.size() >= 3) data.eventTag = tokens[2]; // �C�x���g�^�O
+		if (tokens.size() >= 1) data.speaker = tokens[0]; // 名前・話者
+		if (tokens.size() >= 2) data.message = tokens[1]; // メッセージ
+		if (tokens.size() >= 3) data.eventTag = tokens[2]; // イベントタグ
 
 		dialogueList_.push_back(data);
 	}
@@ -147,14 +188,41 @@ bool StoryPhase::LoadScenario(SCENARIO_TYPE type)
 	return true;
 }
 
+void StoryPhase::OnReturnFromBattle(GameScene::BATTLE_RESULT result)
+{
+	std::string targetTag = "";
+	switch (result)
+	{
+	case GameScene::BATTLE_RESULT::RESULT_ATTACK:
+		targetTag = "BRANCH_ATTACK";
+		break;
+	case GameScene::BATTLE_RESULT::RESULT_TALK:
+		targetTag = "BRANCH_TALK";
+		break;
+	case GameScene::BATTLE_RESULT::RESULT_ESCAPE:
+		targetTag = "BRANCH_ESCAPE";
+		break;
+	}
+
+	// CSV内の targetTag が書かれている行までインデックスを移動
+	for (size_t i = 0; i < dialogueList_.size(); ++i)
+	{
+		if (dialogueList_[i].eventTag == targetTag)
+		{
+			currentLineIndex_ = static_cast<int>(i);
+			return;
+		}
+	}
+}
+
 void StoryPhase::UpdateMainStory(void)
 {
-	// Enter�L�[�������ꂽ��e�L�X�g�𑗂�
+	// Enterキーが押されたらテキストを送る
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
 		if (currentLineIndex_ < dialogueList_.size())
 		{
-			// �C�x���g�^�O�̃`�F�b�N
+			// イベントタグのチェック
 			std::string tag = dialogueList_[currentLineIndex_].eventTag;
 
 			if (tag == "SELECT_ROUTE")
@@ -168,9 +236,35 @@ void StoryPhase::UpdateMainStory(void)
 				gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
 				return;
 			}
+			//次の Wave に進む処理を追加！
+			else if (tag == "GO_NEXT_WAVE")
+			{
+				//GameScene 側の Wave カウントをインクリメント（1進める）
+				gameScene_.NextWave();
 
-			// ���̍s�֐i�߂�
+				//復帰フラグが残っていれば確実にオフにする
+				gameScene_.SetReturnFromBattle(false);
+
+				//次の Wave の CSV（例: Wave 2）を読み込んで画面を初期化する
+				Init();
+				return;
+			}
+
+			// 次の行へ進める
 			currentLineIndex_++;
+
+			//他の分岐タグを跨がないようにスキップガードをかける
+			if (currentLineIndex_ < dialogueList_.size())
+			{
+				std::string nextTag = dialogueList_[currentLineIndex_].eventTag;
+
+				// 分岐セリフの読了後に、別の分岐タグ（BRANCH_...）に遭遇したら GO_NEXT_WAVE 行まで飛ぶ
+				if (nextTag == "BRANCH_ATTACK" || nextTag == "BRANCH_TALK" || nextTag == "BRANCH_ESCAPE")
+				{
+					JumpToTag("GO_NEXT_WAVE");
+					return;
+				}
+			}
 		}
 	}
 }
@@ -186,4 +280,17 @@ void StoryPhase::UpdateSelectRoute(void)
 
 void StoryPhase::UpdateEnding(void)
 {
+}
+
+// 目的のタグがある行までインデックスをスキップする補助関数
+void StoryPhase::JumpToTag(const std::string& targetTag)
+{
+	for (size_t i = currentLineIndex_; i < dialogueList_.size(); ++i)
+	{
+		if (dialogueList_[i].eventTag == targetTag)
+		{
+			currentLineIndex_ = static_cast<int>(i);
+			return;
+		}
+	}
 }
