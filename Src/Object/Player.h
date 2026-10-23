@@ -22,7 +22,7 @@ public:
 
 	//プレイヤーのステータス
 	static constexpr int MAX_HP = 100;        // ステータス名の描画X座標
-	static constexpr int POWER = 20;        // ステータス名の描画X座標
+	static constexpr int POWER = 999;        // ステータス名の描画X座標
 
 	//レベルアップ時のステータス上昇値
 	static constexpr int HP_UP = 25;        //レベルアップ時のHP上昇値

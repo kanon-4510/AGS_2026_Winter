@@ -259,7 +259,7 @@ void StoryPhase::UpdateMainStory(void)
 				std::string nextTag = dialogueList_[currentLineIndex_].eventTag;
 
 				// 分岐セリフの読了後に、別の分岐タグ（BRANCH_...）に遭遇したら GO_NEXT_WAVE 行まで飛ぶ
-				if (nextTag == "BRANCH_ATTACK" || nextTag == "BRANCH_TALK" || nextTag == "BRANCH_ESCAPE")
+				if (nextTag == "SKIP_TEXT")
 				{
 					JumpToTag("GO_NEXT_WAVE");
 					return;

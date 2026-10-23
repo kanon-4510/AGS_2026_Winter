@@ -66,6 +66,9 @@ void GameScene::Update(void)
 void GameScene::Draw(void)
 {
 	phase_->Draw();
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "Battle Count: %d", battleCount_);
+	DrawFormatString(0, 20, GetColor(255, 255, 255), "Talk Count: %d", talkCount_);
+	DrawFormatString(0, 40, GetColor(255, 255, 255), "Escape Count: %d", escapeCount_);
 }
 
 //‰ğ•úˆ—

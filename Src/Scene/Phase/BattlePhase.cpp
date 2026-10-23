@@ -118,7 +118,7 @@ void BattlePhase::SpawnEnemy()
 	// カエル
 	if (wave == 1)
 	{
-		type = Enemy::TYPE::PIKO;
+		type = Enemy::TYPE::FROG;
 		gameScene_.SetEnemyUsed(0);
 	}
 	// ボス
@@ -288,6 +288,15 @@ void BattlePhase::DrawEnemyTrun(void)
 
 void BattlePhase::ProsesSelectAttack(void)
 {
+	if (enemy_->IsDead())
+	{
+		//攻撃撃破結果を GameScene に記録！
+		gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
+		//戦闘終了画面へ移行
+		battlePhase_ = BATTLE_END;
+		return;
+	}
+
 	// バーがまだ動いている最中の処理
 	if (actionGauge_.IsMoving())
 	{
