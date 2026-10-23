@@ -64,6 +64,11 @@ public:
 	// €–S‚µ‚Ä‚¢‚é‚©
 	bool IsDead() const;
 
+	// ƒQ[ƒW‚Ì”»’èƒ][ƒ“‚Ì•‚ğæ“¾
+	float GetGaugeGoodWidth() const;
+	float GetGaugeGreatWidth() const;
+	float GetGaugePerfectWidth() const;
+
 	// HPæ“¾
 	int GetHP() const;
 
@@ -83,6 +88,11 @@ private:
 
 	// “Gí—Ş
 	TYPE type_;
+
+	// ƒQ[ƒW‚Ì”»’èƒ][ƒ“‚Ì•
+	float gaugeGoodWidth_;
+	float gaugeGreatWidth_;
+	float gaugePerfectWidth_;
 
 	// Œ»İHP
 	int hp_;

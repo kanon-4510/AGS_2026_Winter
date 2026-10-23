@@ -32,53 +32,80 @@ void Enemy::Init(TYPE type)
 		maxHp_ = 20;
 		atk_ = 10;
 		imageHandle_ = LoadGraph("Data/Enemy/Frog.png");
+		gaugeGoodWidth_ = 0.30f;
+		gaugeGreatWidth_ = 0.40f;
+		gaugePerfectWidth_ = 0.15f;
 		break;
 
 	case TYPE::GOBLIN:
 		maxHp_ = 50;
 		atk_ = 15;
 		imageHandle_ = LoadGraph("Data/Enemy/Goblin.png");
+		gaugeGoodWidth_ = 0.35f;
+		gaugeGreatWidth_ = 0.40f;
+		gaugePerfectWidth_ = 0.10f;
 		break;
 
 	case TYPE::REAPER:
 		maxHp_ = 45;
 		atk_ = 20;
 		imageHandle_ = LoadGraph("Data/Enemy/Reaper.png");
+		gaugeGoodWidth_ = 0.35f;
+		gaugeGreatWidth_ = 0.40f;
+		gaugePerfectWidth_ = 0.08f;
 		break;
 
 	case TYPE::SLIME:
 		maxHp_ = 100;
 		atk_ = 10;
 		imageHandle_ = LoadGraph("Data/Enemy/Slime.png");
+		gaugeGoodWidth_ = 0.30f;
+		gaugeGreatWidth_ = 0.40f;
+		gaugePerfectWidth_ = 0.15f;
 		break;
 
 	case TYPE::DARKKNIGHT:
 		maxHp_ = 60;
 		atk_ = 25;
 		imageHandle_ = LoadGraph("Data/Enemy/Darkknight.png");
+		gaugeGoodWidth_ = 0.35f;
+		gaugeGreatWidth_ = 0.35f;
+		gaugePerfectWidth_ = 0.06f;
 		break;
 
 	case TYPE::BAT:
 		maxHp_ = 100;
 		atk_ = 25;
 		imageHandle_ = LoadGraph("Data/Enemy/Bat.png");
+		gaugeGoodWidth_ = 0.35f;
+		gaugeGreatWidth_ = 0.35f;
+		gaugePerfectWidth_ = 0.08f;
 		break;
 
 	case TYPE::DRAGON:
 		maxHp_ = 80;
 		atk_ = 15;
 		imageHandle_ = LoadGraph("Data/Enemy/Dragon.png");
+		gaugeGoodWidth_ = 0.30f;
+		gaugeGreatWidth_ = 0.35f;
+		gaugePerfectWidth_ = 0.07f;
 		break;
 
 	case TYPE::DEVIL:
 		maxHp_ = 200;
 		atk_ = 30;
 		imageHandle_ = LoadGraph("Data/Enemy/Devil.png");
+		gaugeGoodWidth_ = 0.30f;
+		gaugeGreatWidth_ = 0.30f;
+		gaugePerfectWidth_ = 0.05f;
 		break;
 
 	case TYPE::PIKO:
 		maxHp_ = 999;
 		atk_ = 99;
+		gaugeGoodWidth_ = 0.50f;
+		gaugeGreatWidth_ = 0.20f;
+		gaugePerfectWidth_ = 0.03f;
 		imageHandle_ = LoadGraph("Data/Enemy/Piko.png");
 	}
 
@@ -253,6 +280,21 @@ void Enemy::Damage(int damage)
 bool Enemy::IsDead() const
 {
 	return !isAlive_;
+}
+
+float Enemy::GetGaugeGoodWidth() const
+{
+	return gaugeGoodWidth_;
+}
+
+float Enemy::GetGaugeGreatWidth() const
+{
+	return gaugeGreatWidth_;
+}
+
+float Enemy::GetGaugePerfectWidth() const
+{
+	return gaugePerfectWidth_;
 }
 
 int Enemy::GetHP() const

@@ -188,7 +188,7 @@ void BattlePhase::UpdateCommandSelect(void)
 		{
 			commandType_ = ATTACK;
 			battlePhase_ = PLAYER_TURN;
-			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH); // 攻撃ゲージ開始
+			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 		}
 		else if (selectedIndex_ == 1)
 		{
@@ -250,6 +250,8 @@ void BattlePhase::UpdateEnemyTurn(void)
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
 			battleTurnCnt_++;
+
+			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 
 			battlePhase_ = COMMAND_SELECT;
 		}
@@ -331,36 +333,13 @@ void BattlePhase::ProsesSelectAttack(void)
 				return;
 			}
 
-		}
-			battleTurnCnt_++;
-			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
-			battlePhase_ = ENEMY_TURN;
+        battleTurnCnt_++;
+
+		actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+
+        battlePhase_ = ENEMY_TURN;
+    }
 	}
-	// バーが止まった後の処理
-	//else
-	//{
-	//    if (ins_.IsTrgDown(KEY_INPUT_RETURN))
- //   {
- //       // 敵を倒していたら
- //       if (enemy_->IsDead())
- //       {
- //           // 5戦目のボスを倒したらゲームクリア
- //           if (gameScene_.GetWaveCount() == 5)
- //           {
- //               // ゲームクリア用のフェーズへ移動
- //               gameScene_.ChangePhase(
- //                   GameScene::QUEST_PHASE::PHASE_STORY
- //               );
- //               return;
- //           }
- //           // 5戦目以外なら戦闘終了
- //           battlePhase_ = BATTLE_END;
- //           return;
- //       }
- //       battleTurnCnt_++;
- //       battlePhase_ = ENEMY_TURN;
- //   }
-	//}
 }
 
 void BattlePhase::ProsesSelectTalk(void)
@@ -384,11 +363,10 @@ void BattlePhase::ProsesSelectTalk(void)
 		{
 			currentMessage_ = "相手は少し話に耳を傾けている…";
 
-			// まだ回数が足りないので敵のターンへ
-			battleTurnCnt_++;
-			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
-			battlePhase_ = ENEMY_TURN;
-		}
+		battleTurnCnt_++;
+		//battlePhase_ = COMMAND_SELECT;
+		actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+		battlePhase_ = ENEMY_TURN;
 	}
 }
 
@@ -410,7 +388,7 @@ void BattlePhase::ProsesSelectRun(void)
 		// 失敗時
 		else
 		{
-			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
+			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 			battlePhase_ = ENEMY_TURN;
 		}
 	}
