@@ -59,7 +59,7 @@ void ActionGauge::Start(float greenW, float yellowW, float redW, float speed)
     // 毎回ランダムな速度を設定
     barPosition_ = 0.0f;
 
-    // バーの速度をランダムにする（0.8～1.5）
+    // バーの速度をランダムにする
     float randomSpeed = 0.8f + GetRand(70) / 100.0f;
     barSpeed_ = randomSpeed;
 

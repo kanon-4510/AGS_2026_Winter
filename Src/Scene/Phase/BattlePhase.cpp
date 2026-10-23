@@ -188,7 +188,7 @@ void BattlePhase::UpdateCommandSelect(void)
 		{
 			commandType_ = ATTACK;
 			battlePhase_ = PLAYER_TURN;
-			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH); // UŒ‚ƒQ[ƒWŠJŽn
+			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 		}
 		else if (selectedIndex_ == 1)
 		{
@@ -251,11 +251,7 @@ void BattlePhase::UpdateEnemyTurn(void)
 		{
 			battleTurnCnt_++;
 
-			actionGauge_.Start(
-				ActionGauge::BASE_GOOD_WIDTH,
-				ActionGauge::BASE_GREAT_WIDTH,
-				ActionGauge::BASE_PERFECT_WIDTH
-			);
+			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 
 			battlePhase_ = COMMAND_SELECT;
 		}
@@ -338,11 +334,7 @@ void BattlePhase::ProsesSelectAttack(void)
 
         battleTurnCnt_++;
 
-        actionGauge_.Start(
-            ActionGauge::BASE_GOOD_WIDTH,
-            ActionGauge::BASE_GREAT_WIDTH,
-            ActionGauge::BASE_PERFECT_WIDTH
-        );
+		actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 
         battlePhase_ = ENEMY_TURN;
     }
@@ -357,7 +349,7 @@ void BattlePhase::ProsesSelectTalk(void)
 
 		battleTurnCnt_++;
 		//battlePhase_ = COMMAND_SELECT;
-		actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
+		actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 		battlePhase_ = ENEMY_TURN;
 	}
 }
@@ -375,7 +367,7 @@ void BattlePhase::ProsesSelectRun(void)
 		}
 		else
 		{
-			actionGauge_.Start(ActionGauge::BASE_GOOD_WIDTH, ActionGauge::BASE_GREAT_WIDTH, ActionGauge::BASE_PERFECT_WIDTH);
+			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 			battlePhase_ = ENEMY_TURN;
 		}
 	}
