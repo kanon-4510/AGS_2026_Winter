@@ -346,7 +346,7 @@ void BattlePhase::ProsesSelectTalk(void)
 {
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		if(enemy_->GetHP() == enemy_->GetMaxHP())
+		if (enemy_->GetHP() == enemy_->GetMaxHP())
 		{
 			talkSuccessCount_++;
 		}
@@ -363,10 +363,11 @@ void BattlePhase::ProsesSelectTalk(void)
 		{
 			currentMessage_ = "‘ŠŽè‚Í­‚µ˜b‚ÉŽ¨‚ðŒX‚¯‚Ä‚¢‚éc";
 
-		battleTurnCnt_++;
-		//battlePhase_ = COMMAND_SELECT;
-		actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
-		battlePhase_ = ENEMY_TURN;
+			battleTurnCnt_++;
+			//battlePhase_ = COMMAND_SELECT;
+			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+			battlePhase_ = ENEMY_TURN;
+		}
 	}
 }
 
