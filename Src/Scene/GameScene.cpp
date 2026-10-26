@@ -155,7 +155,7 @@ GameScene::ENDING_TYPE GameScene::JudgeEndingType() const
 
 void GameScene::NextWave(void)
 {
-	if (waveCount_ < 5)
+	if (waveCount_ < 6)
 	{
 		waveCount_++;
 	}

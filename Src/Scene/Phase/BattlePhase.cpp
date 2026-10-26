@@ -72,6 +72,7 @@ void BattlePhase::Draw(void)
 	DrawFormatString(100, 50, 0xFFFFFF, "Battle Turn: %d", battleTurnCnt_);
 	DrawString(100, 100, "Battle Phase", GetColor(255, 0, 0));
 	DrawFormatString(700,120,0xFFFFFF,"Enemy HP: %d",enemy_->GetHP());
+	DrawFormatString(0,120,0xFFFFFF,"Wave Count: %d",gameScene_.GetWaveCount());
 
 	// メッセージ枠およびアクションゲージの描画領域指定（例: 画面下部）
 	int winX = 100, winY = 360, winW = 600, winH = 180;
@@ -93,10 +94,10 @@ void BattlePhase::Draw(void)
 		DrawCommandSelect();
 		break;
 	case BattlePhase::PLAYER_TURN:
-		DrawPlayerTrun();
+		DrawPlayerTurn();
 		break;
 	case BattlePhase::ENEMY_TURN:
-		DrawEnemyTrun();
+		DrawEnemyTurn();
 		break;
 	case BattlePhase::BATTLE_END:
 		DrawString(100, GameScene::COMMAND_MENU_Y, "バトル終了", GetColor(255, 0, 0));
@@ -126,6 +127,10 @@ void BattlePhase::SpawnEnemy()
 	else if (wave == 5)
 	{
 		type = Enemy::TYPE::DEVIL;
+	}
+	else if (wave == 6)
+	{
+		type = Enemy::TYPE::PIKO;
 	}
 	// 2～4戦目は重複なしでランダム
 	else
@@ -164,6 +169,7 @@ void BattlePhase::SpawnEnemy()
 			break;
 		}
 	}
+	
 
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Init(type);
@@ -275,14 +281,14 @@ void BattlePhase::DrawCommandSelect(void)
 	DrawFormatString(ARROW_POS_X + ARROW_OFFSET * selectedIndex_, GameScene::COMMAND_MENU_Y, 0xffffff, "→");
 }
 
-void BattlePhase::DrawPlayerTrun(void)
+void BattlePhase::DrawPlayerTurn(void)
 {
 	//プレイヤーのターンの描画処理
 	DrawString(100, 130, "プレイヤーターン",0xFFFFFF);
 	DrawFormatString(100, GameScene::COMMAND_MENU_Y, 0xFFFFFF, "CommandType: %d", commandType_);
 }
 
-void BattlePhase::DrawEnemyTrun(void)
+void BattlePhase::DrawEnemyTurn(void)
 {
 	//敵のターンの描画処理
 	DrawString(100, 130, "敵のターン", 0xFFFFFF);
@@ -351,7 +357,7 @@ void BattlePhase::ProsesSelectTalk(void)
 			talkSuccessCount_++;
 		}
 
-		if (talkSuccessCount_ >= 4)
+		if (talkSuccessCount_ >= 1)
 		{
 			currentMessage_ = "相手は戦意を喪失した！";
 

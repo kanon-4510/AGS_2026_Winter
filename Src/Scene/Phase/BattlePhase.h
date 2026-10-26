@@ -77,8 +77,8 @@ private:
 	void UpdateBattleEnd(void);		//戦闘終了の更新処理
 
 	void DrawCommandSelect(void);	//コマンド選択の描画処理
-	void DrawPlayerTrun(void);		//プレイヤーのターンの描画処理
-	void DrawEnemyTrun(void);		//敵のターンの描画処理
+	void DrawPlayerTurn(void);		//プレイヤーのターンの描画処理
+	void DrawEnemyTurn(void);		//敵のターンの描画処理
 
 	void ProsesSelectAttack(void);	//攻撃コマンドの処理
 	void ProsesSelectTalk(void);	//話すコマンドの処理
