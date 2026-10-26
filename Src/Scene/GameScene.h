@@ -14,6 +14,7 @@ public:
 	{
 		PHASE_STORY,	//ストーリー
 		PHASE_BATTLE,	//戦闘
+		PHASE_ENDING,	//エンディング
 		MAX				//最大値
 	};
 

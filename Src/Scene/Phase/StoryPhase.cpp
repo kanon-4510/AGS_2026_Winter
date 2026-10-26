@@ -2,6 +2,7 @@
 #include <fstream>
 #include "../../Utility/ASOUtility.h"
 #include "../../Manager/InputManager.h"
+#include "../../Manager/SceneManager.h"
 #include "../GameScene.h"
 #include "StoryPhase.h"
 
@@ -56,13 +57,23 @@ void StoryPhase::Init()
 				LoadScenario(STORY_TRUE_END);   // ending_true.csv
 				break;
 			}
+			//エンディング専用のステートに切り替える
+			storyPhase_ = ENDING;
 			currentLineIndex_ = 0;
+
 			return;
 		}
+
 
 		//修正箇所：まず現在の Wave の CSV をロードして会話リスト（dialogueList_）を構築する！
 		SCENARIO_TYPE waveType = static_cast<SCENARIO_TYPE>(currentWave - 1);
 		LoadScenario(waveType);
+
+		//真ボス戦（Wave 6）からの復帰時はエンディングステートにする
+		if (currentWave == 6)
+		{
+			storyPhase_ = ENDING;
+		}
 
 		// データが読み込まれた状態（dialogueList_ が入った状態）で分岐タグへジャンプ
 		GameScene::BATTLE_RESULT result = gameScene_.GetLastBattleResult();
@@ -71,7 +82,7 @@ void StoryPhase::Init()
 	//通常のシナリオ開始時（初回または次のWave進捗時）
 	else
 	{
-		// Wave数に対応するシナリオ（STORY_WAVE_1 〜 STORY_WAVE_5）をロード
+		//Wave数に対応するシナリオ（STORY_WAVE_1 〜 STORY_WAVE_5）をロード
 		SCENARIO_TYPE waveType = static_cast<SCENARIO_TYPE>(currentWave - 1);
 		LoadScenario(waveType);
 		currentLineIndex_ = 0;
@@ -126,6 +137,12 @@ void StoryPhase::Draw()
 		{
 			DrawFormatString(100, 250, 0x888888, "Tag: %s", data.eventTag.c_str());
 		}
+		// デバッグ用：現在の行番号とタグを画面に表示する
+		if (currentLineIndex_ < dialogueList_.size())
+		{
+			std::string currentTag = dialogueList_[currentLineIndex_].eventTag;
+			DrawFormatString(100, 300, 0x00FF00, "Line: %d / Tag: [%s]", currentLineIndex_, currentTag.c_str());
+		}
 	}
 
 	switch (storyPhase_)
@@ -161,19 +178,19 @@ bool StoryPhase::LoadScenario(SCENARIO_TYPE type)
 	std::string line;
 	while (std::getline(file, line))
 	{
-		// 空行やヘッダー行（名前,メッセージ... / 話者,メッセージ...）をスキップ
+		//空行やヘッダー行（名前,メッセージ... / 話者,メッセージ...）をスキップ
 		if (line.empty() || line.find("名前,メッセージ") != std::string::npos || line.find("話者,メッセージ") != std::string::npos)
 		{
 			continue;
 		}
 
-		// Windows改行コード(\r)の除去
+		//Windows改行コード(\r)の除去
 		if (!line.empty() && line.back() == '\r')
 		{
 			line.pop_back();
 		}
 
-		// AsoUtility::Split を使ってカンマで分割
+		//AsoUtility::Split を使ってカンマで分割
 		std::vector<std::string> tokens = AsoUtility::Split(line, ',');
 
 		DialogueData data;
@@ -204,7 +221,7 @@ void StoryPhase::OnReturnFromBattle(GameScene::BATTLE_RESULT result)
 		break;
 	}
 
-	// CSV内の targetTag が書かれている行までインデックスを移動
+	//CSV内のtargetTag が書かれている行までインデックスを移動
 	for (size_t i = 0; i < dialogueList_.size(); ++i)
 	{
 		if (dialogueList_[i].eventTag == targetTag)
@@ -236,16 +253,16 @@ void StoryPhase::UpdateMainStory(void)
 				gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
 				return;
 			}
-			//次の Wave に進む処理を追加！
+			//次のWaveに進む処理を追加！
 			else if (tag == "GO_NEXT_WAVE")
 			{
-				//GameScene 側の Wave カウントをインクリメント（1進める）
+				//GameScene側のWaveカウントをインクリメント（1進める）
 				gameScene_.NextWave();
 
 				//復帰フラグが残っていれば確実にオフにする
 				gameScene_.SetReturnFromBattle(false);
 
-				//次の Wave の CSV（例: Wave 2）を読み込んで画面を初期化する
+				//次のWaveのCSV（例: Wave 2）を読み込んで画面を初期化する
 				Init();
 				return;
 			}
@@ -280,6 +297,32 @@ void StoryPhase::UpdateSelectRoute(void)
 
 void StoryPhase::UpdateEnding(void)
 {
+	// Enterキーが押されたらエンディングのテキストを進める
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+	{
+		if (currentLineIndex_ < dialogueList_.size())
+		{
+			std::string tag = dialogueList_[currentLineIndex_].eventTag;
+
+			// エンディングの最後に到達したらクリアシーンへ移行
+			if (tag == "END_GAME")
+			{
+				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::CLEAR);
+				return;
+			}
+
+			if (tag == "START_BATTLE")
+			{
+				gameScene_.NextWave();
+				gameScene_.StartNextBattle();
+				gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
+				return;
+			}
+
+			//次の行へ進める
+			currentLineIndex_++;
+		}
+	}
 }
 
 // 目的のタグがある行までインデックスをスキップする補助関数
