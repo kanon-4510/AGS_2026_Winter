@@ -18,6 +18,8 @@ public:
 		SELECT_SE,
 		DAMAGE_SE,
 		ATTACK_SE,
+		CRITICALATTACK_SE,
+		CURSOR_SE
 	};
 
 	// 明示的にインステンスを生成する

@@ -2,6 +2,7 @@
 #include <string>
 #include "../../Manager/InputManager.h"
 #include "../../Manager/ResourceManager.h"
+#include "../../Manager/SoundManager.h"
 #include "../GameScene.h"
 #include "../../Object/Player.h"
 #include "../../Object/Enemy.h"
@@ -35,6 +36,9 @@ void BattlePhase::Init(void)
 
 	enemy_ = std::make_unique<Enemy>();
 	SpawnEnemy();
+
+	//‰¹Šy
+	SoundManager::GetInstance().Play(SoundManager::SRC::GAME_BGM, Sound::TIMES::LOOP);
 
 	attackImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_ATTACK).handleId_;
 	talkImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_TALK).handleId_;
@@ -263,6 +267,7 @@ void BattlePhase::UpdateBattleEnd(void)
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
 		gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_STORY);
+		SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
 	}
 }
 
