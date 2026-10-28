@@ -16,9 +16,9 @@ public:
 	static constexpr int ARROW_X = TITLE_MESSAGE_X - 40;	//矢印の表示位置X
 	static constexpr int ARROW_Y = TITLE_MESSAGE_Y;			//矢印の表示位置Y
 
-	static constexpr int TUTORIAL_TEXT_X = (Application::SCREEN_SIZE_X - 220) / 2 ;	//チュートリアルON/OFFの表示位置X
-	static constexpr int TUTORIAL_TEXT_Y = Application::SCREEN_SIZE_Y - 100;		//チュートリアルON/OFFの表示位置Y
-	static constexpr int TUTORIAL_ARROW_OFFSET_X = 30;	//チュートリアル項目選択時の矢印X座標オフセット量
+	static constexpr int MODE_TEXT_X = (Application::SCREEN_SIZE_X - 170) / 2 ;	//ゲームモードの表示位置X
+	static constexpr int MODE_TEXT_Y = Application::SCREEN_SIZE_Y - 100;		//ゲームモードの表示位置Y
+	static constexpr int MODE_ARROW_OFFSET_X = 30;	//ゲームモード項目選択時の矢印X座標オフセット量
 
 	static constexpr int EXIT_TEXT_X = (Application::SCREEN_SIZE_X / 3) + 40;	//ゲーム終了確認メッセージ
 	static constexpr int EXIT_TEXT_Y = TITLE_MESSAGE_Y;							//ゲーム終了確認メッセージ
@@ -38,6 +38,7 @@ public:
 	enum TITLE_SELECTION
 	{
 		START_GAME,	//ゲームスタート
+		MODE_SELECT,//モード選択
 		EXIT_GAME,	//ゲーム終了
 		MAX			//最大値
 	};
@@ -86,11 +87,10 @@ private:
 	//メンバー変数
 	int titleImage_;		//タイトル画像の格納領域
 	int currentSelection_;	//現在の選択肢
-	int tutorialIndex_ = 0;	//0：ON,1：OFF
+	int modeIndex_ = 0;		//0：STORY,1：BATTLE
 	int confirmIndex_ = 0;	//ゲーム終了確認の選択肢インデックス
 
 	void ProcessTitleSelection(void);	//タイトル選択の処理
 	void ProcessTitleDecision(void);	//タイトル決定の処理
-	void Tutorial(void);				//チュートリアルのON/OFF切り替え処理
 	void ExitGame(void);				//ゲーム終了の確認処理
 };
