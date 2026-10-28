@@ -31,6 +31,10 @@ void ClearScene::Update(void)
 		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_UP) ||
 		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_DOWN))
 	{
+
+		//カーソル音
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::ONCE);
+
 		selectIndex_ = 1 - selectIndex_;	//0と1を反転させる
 		if (selectIndex_ == 0)
 		{
@@ -48,7 +52,7 @@ void ClearScene::Update(void)
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN)||
 		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DOWN)) {
 
-		//選択音
+		//決定音
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::ONCE);
 
 		if(selectIndex_ == 0)
@@ -61,8 +65,7 @@ void ClearScene::Update(void)
 			//タイトルへ戻る
 			SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::TITLE);
 		}
-		//音楽
-		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::ONCE);
+
 	}
 }
 

@@ -85,6 +85,9 @@ void TitleScene::ProcessTitleSelection(void)
 		index = (index + (static_cast<int>(TITLE_SELECTION::MAX) - 1)) % static_cast<int>(TITLE_SELECTION::MAX);
 		titleSelection_ = static_cast<TITLE_SELECTION>(index);
 		normalOffset_ = index * OFFSET_ARROW; //矢印のオフセット値を更新
+
+		//カーソル音
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 	else if (ins_.IsTrgDown(KEY_INPUT_DOWN) ||
 		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_DOWN))
@@ -93,6 +96,9 @@ void TitleScene::ProcessTitleSelection(void)
 		index = (index + 1) % static_cast<int>(TITLE_SELECTION::MAX);
 		titleSelection_ = static_cast<TITLE_SELECTION>(index);
 		normalOffset_ = index * OFFSET_ARROW; //矢印のオフセット値を更新
+
+		//カーソル音
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 }
 
@@ -140,6 +146,9 @@ void TitleScene::Tutorial(void)
 			tutorialOffsetX_ = TUTORIAL_ARROW_OFFSET_X; //矢印のオフセット値を更新
 			tutorialOffsetY_ = tutorialIndex_ * OFFSET_ARROW; //矢印のオフセット値を更新
 		}
+
+		//カーソル音
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 
 	//最終決定
@@ -174,6 +183,9 @@ void TitleScene::ExitGame(void)
 		//矢印のオフセットの位置を決める
 		confirmIndex_ = 1 - confirmIndex_;	//0と1を反転させる
 		exitOffset_ = confirmIndex_ * -EXIT_OPTION_SPACING_X; //矢印のオフセット値を更新
+
+		//カーソル音
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 
 	//最終決定

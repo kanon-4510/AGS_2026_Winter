@@ -48,12 +48,12 @@ void SoundManager::Init(void)
 
 	// ƒJ[ƒ\ƒ‹ˆÚ“®
 	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Cursor.mp3");
-	res.ChangeMaxVolume(0.5);
+	res.ChangeMaxVolume(1.0);
 	soundMap_.emplace(SRC::CURSOR_SE, res);
 
 	// Œˆ’è
 	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Select.mp3");
-	res.ChangeMaxVolume(0.5);
+	res.ChangeMaxVolume(1.0);
 	soundMap_.emplace(SRC::SELECT_SE, res);
 
 	// UŒ‚SE

@@ -185,10 +185,14 @@ void BattlePhase::UpdateCommandSelect(void)
 	if (ins_.IsTrgDown(KEY_INPUT_RIGHT))
 	{
 		selectedIndex_ = (selectedIndex_ + 1) % MAX_COMMANDS;
+		//ƒJ[ƒ\ƒ‹‰¹
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 	else if(ins_.IsTrgDown(KEY_INPUT_LEFT))
 	{
 		selectedIndex_ = (selectedIndex_ - 1 + MAX_COMMANDS) % MAX_COMMANDS;
+		//ƒJ[ƒ\ƒ‹‰¹
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
@@ -210,6 +214,9 @@ void BattlePhase::UpdateCommandSelect(void)
 			commandType_ = RUN;
 			battlePhase_ = PLAYER_TURN;
 		}
+
+		//Œˆ’è‰¹
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 
 		selectedIndex_ = 0;
 	}
@@ -252,6 +259,9 @@ void BattlePhase::UpdateEnemyTurn(void)
 
 			// “G‚ÌUŒ‚—Í‚ðŽg‚Á‚Äƒ_ƒ[ƒWŒvŽZ
 			player_->Damage(enemy_->GetATK());
+
+			// “G‚©‚ç‚Ìƒ_ƒ[ƒW‰¹
+			SoundManager::GetInstance().Play(SoundManager::SRC::CRITICALATTACK_SE, Sound::TIMES::FORCE_ONCE);
 		}
 	}
 	// ƒo[‚ªŽ~‚Ü‚Á‚½Œã
@@ -264,6 +274,9 @@ void BattlePhase::UpdateEnemyTurn(void)
 			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 
 			battlePhase_ = COMMAND_SELECT;
+
+			// Œˆ’è‰¹
+			SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 		}
 	}
 }
@@ -274,6 +287,9 @@ void BattlePhase::UpdateBattleEnd(void)
 	{
 		gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_STORY);
 		SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
+
+		// Œˆ’è‰¹
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 	}
 }
 
@@ -327,6 +343,12 @@ void BattlePhase::ProsesSelectAttack(void)
 
 			// “G‚Éƒ_ƒ[ƒW‚ð—^‚¦‚é
 			enemy_->Damage(power);
+
+			// ƒ_ƒ[ƒW‚ð—^‚¦‚ç‚ê‚½‚Æ‚«‚¾‚¯UŒ‚‰¹‚ð–Â‚ç‚·
+			if (power > 0)
+			{
+				SoundManager::GetInstance().Play(SoundManager::SRC::ATTACK_SE,Sound::TIMES::FORCE_ONCE);
+			}
 		}
 	}
 	else
@@ -338,6 +360,9 @@ void BattlePhase::ProsesSelectAttack(void)
 			{
 				//UŒ‚Œ‚”jŒ‹‰Ê‚ð GameScene ‚É‹L˜^I
 				gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
+
+				//Œˆ’è‰¹
+				SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 
 				//í“¬I—¹‰æ–Ê‚ÖˆÚs
 				battlePhase_ = BATTLE_END;
@@ -379,6 +404,9 @@ void BattlePhase::ProsesSelectTalk(void)
 			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 			battlePhase_ = ENEMY_TURN;
 		}
+
+		// Œˆ’è‰¹
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 	}
 }
 
@@ -403,5 +431,8 @@ void BattlePhase::ProsesSelectRun(void)
 			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 			battlePhase_ = ENEMY_TURN;
 		}
+
+		// Œˆ’è‰¹
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 	}
 }
