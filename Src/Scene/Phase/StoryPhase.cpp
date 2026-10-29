@@ -94,6 +94,7 @@ void StoryPhase::Update()
 	// スペースキーで次の戦闘に進む(デバッグ)
 	if (ins_.IsTrgDown(KEY_INPUT_SPACE))
 	{
+		gameScene_.NextWave();
 		gameScene_.StartNextBattle();
 		gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
 		return;
@@ -137,12 +138,6 @@ void StoryPhase::Draw()
 		{
 			DrawFormatString(100, 250, 0x888888, "Tag: %s", data.eventTag.c_str());
 		}
-		// デバッグ用：現在の行番号とタグを画面に表示する
-		if (currentLineIndex_ < dialogueList_.size())
-		{
-			std::string currentTag = dialogueList_[currentLineIndex_].eventTag;
-			DrawFormatString(100, 300, 0x00FF00, "Line: %d / Tag: [%s]", currentLineIndex_, currentTag.c_str());
-		}
 	}
 
 	switch (storyPhase_)
@@ -150,6 +145,21 @@ void StoryPhase::Draw()
 	case StoryPhase::MAIN_STORY:
 		break;
 	case StoryPhase::SELECT_ROUTE:
+		DrawBox(80, 350, 600, 350 + static_cast<int>(choiceList_.size()) * 40, GetColor(0, 0, 50), TRUE);
+
+		for (size_t i = 0; i < choiceList_.size(); ++i)
+		{
+			int drawY = 370 + static_cast<int>(i) * 40;
+
+			// カーソル（→）の描画
+			if (i == selectCursor_)
+			{
+				DrawString(100, drawY, "→", 0xFFFF00);
+			}
+
+			// 選択肢テキストの描画
+			DrawString(130, drawY, choiceList_[i].text.c_str(), 0xFFFFFF);
+		}
 		break;
 	case StoryPhase::ENDING:
 		break;
@@ -244,6 +254,16 @@ void StoryPhase::UpdateMainStory(void)
 
 			if (tag == "SELECT_ROUTE")
 			{
+				choiceList_.clear();
+				int idx = currentLineIndex_ + 1;
+				
+				while (idx < dialogueList_.size() && !dialogueList_[idx].message.empty() && !dialogueList_[idx].eventTag.empty())
+				{
+					choiceList_.push_back({ dialogueList_[idx].message, dialogueList_[idx].eventTag });
+					idx++;
+				}
+				selectCursor_ = 0;
+				perPhase_ = storyPhase_; // 現在のフェーズを保持
 				storyPhase_ = SELECT_ROUTE;
 				return;
 			}
@@ -251,6 +271,13 @@ void StoryPhase::UpdateMainStory(void)
 			{
 				gameScene_.StartNextBattle();
 				gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
+				return;
+			}
+			else if (tag == "JUMP_MESS")
+			{
+				std::string nextTag = dialogueList_[currentLineIndex_].eventTag;
+
+				JumpToTag("MESS_POINT"); // 実際の合流地点のタグへジャンプ
 				return;
 			}
 			//次のWaveに進む処理を追加！
@@ -266,7 +293,12 @@ void StoryPhase::UpdateMainStory(void)
 				Init();
 				return;
 			}
-
+			else if(tag == "BAD_END")
+			{
+				// エンディングの最後に到達したらクリアシーンへ移行
+				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::OVER);
+				return;
+			}
 			// 次の行へ進める
 			currentLineIndex_++;
 
@@ -288,10 +320,29 @@ void StoryPhase::UpdateMainStory(void)
 
 void StoryPhase::UpdateSelectRoute(void)
 {
-	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+	if (ins_.IsTrgDown(KEY_INPUT_UP))
 	{
-		storyPhase_ = MAIN_STORY;
-		currentLineIndex_++;
+		selectCursor_ = (selectCursor_ - 1 + static_cast<int>(choiceList_.size())) % static_cast<int>(choiceList_.size());
+	}
+	else if (ins_.IsTrgDown(KEY_INPUT_DOWN))
+	{
+		selectCursor_ = (selectCursor_ + 1) % static_cast<int>(choiceList_.size());
+	}
+
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN) && !choiceList_.empty())
+	{
+		std::string targetTag = choiceList_[selectCursor_].targetTag;
+		if (targetTag == "CHOICE_LEFT")
+		{
+			targetTag = "CHOICE_TO_LEFT";
+		}
+		else if (targetTag == "CHOICE_RIGHT")
+		{
+			targetTag = "CHOICE_TO_RIGHT";
+		}
+
+		storyPhase_ = perPhase_;
+		JumpToTag(targetTag);
 	}
 }
 
@@ -310,8 +361,22 @@ void StoryPhase::UpdateEnding(void)
 				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::CLEAR);
 				return;
 			}
+			else if (tag == "SELECT_ROUTE")
+			{
+				choiceList_.clear();
+				int idx = currentLineIndex_ + 1;
 
-			if (tag == "START_BATTLE")
+				while (idx < dialogueList_.size() && !dialogueList_[idx].message.empty() && !dialogueList_[idx].eventTag.empty())
+				{
+					choiceList_.push_back({ dialogueList_[idx].message, dialogueList_[idx].eventTag });
+					idx++;
+				}
+				selectCursor_ = 0;
+				perPhase_ = storyPhase_; // 現在のフェーズを保持
+				storyPhase_ = SELECT_ROUTE;
+				return;
+			}
+			else if (tag == "START_BATTLE")
 			{
 				gameScene_.NextWave();
 				gameScene_.StartNextBattle();
@@ -328,9 +393,15 @@ void StoryPhase::UpdateEnding(void)
 // 目的のタグがある行までインデックスをスキップする補助関数
 void StoryPhase::JumpToTag(const std::string& targetTag)
 {
-	for (size_t i = currentLineIndex_; i < dialogueList_.size(); ++i)
+	for (size_t i = 0; i < dialogueList_.size(); ++i)
 	{
-		if (dialogueList_[i].eventTag == targetTag)
+		std::string tag = dialogueList_[i].eventTag;
+		while (!tag.empty() && (tag.back() == '\r' || tag.back() == ' ' || tag.back() == '\n'))
+		{
+			tag.pop_back();
+		}
+
+		if (tag == targetTag)
 		{
 			currentLineIndex_ = static_cast<int>(i);
 			return;

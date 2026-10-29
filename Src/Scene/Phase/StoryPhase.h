@@ -36,6 +36,12 @@ public:
 		std::string eventTag; // イベントタグ
 	};
 
+	struct ChoiceData
+	{
+		std::string text;       // 選択肢のテキスト
+		std::string targetTag;  // 選んだときのジャンプ先タグ
+	};
+
 	static constexpr int MAX_SCENARIO_TYPE = 8;
 
 	StoryPhase(GameScene& gameScene);
@@ -54,9 +60,12 @@ private:
 	GameScene& gameScene_;			//親の情報を渡す
 
 	STORY_PHASE storyPhase_;		//ストーリーフェーズの種類
+	STORY_PHASE perPhase_;			//現在のフェーズを保持する変数
 
 	std::vector<DialogueData> dialogueList_;	//シナリオのデータを格納するリスト
+	std::vector<ChoiceData> choiceList_;		//選択肢のリスト
 	int currentLineIndex_ = 0;					//現在のセリフのインデックス
+	int selectCursor_ = 0;      //現在のカーソル位置
 
 	void OnReturnFromBattle(GameScene::BATTLE_RESULT result);
 
