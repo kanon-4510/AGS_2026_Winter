@@ -2,6 +2,7 @@
 #include <string>
 #include "../../Manager/InputManager.h"
 #include "../../Manager/ResourceManager.h"
+#include "../../Manager/SoundManager.h"
 #include "../GameScene.h"
 #include "../../Object/Player.h"
 #include "../../Object/Enemy.h"
@@ -35,6 +36,9 @@ void BattlePhase::Init(void)
 
 	enemy_ = std::make_unique<Enemy>();
 	SpawnEnemy();
+
+	//音楽
+	SoundManager::GetInstance().Play(SoundManager::SRC::GAME_BGM, Sound::TIMES::LOOP);
 
 	attackImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_ATTACK).handleId_;
 	talkImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_TALK).handleId_;
@@ -181,10 +185,14 @@ void BattlePhase::UpdateCommandSelect(void)
 	if (ins_.IsTrgDown(KEY_INPUT_RIGHT))
 	{
 		selectedIndex_ = (selectedIndex_ + 1) % MAX_COMMANDS;
+		//カーソル音
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 	else if(ins_.IsTrgDown(KEY_INPUT_LEFT))
 	{
 		selectedIndex_ = (selectedIndex_ - 1 + MAX_COMMANDS) % MAX_COMMANDS;
+		//カーソル音
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
@@ -206,6 +214,9 @@ void BattlePhase::UpdateCommandSelect(void)
 			commandType_ = RUN;
 			battlePhase_ = PLAYER_TURN;
 		}
+
+		//決定音
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 
 		selectedIndex_ = 0;
 	}
@@ -248,6 +259,9 @@ void BattlePhase::UpdateEnemyTurn(void)
 
 			// 敵の攻撃力を使ってダメージ計算
 			player_->Damage(enemy_->GetATK());
+
+			// 敵からのダメージ音
+			SoundManager::GetInstance().Play(SoundManager::SRC::CRITICALATTACK_SE, Sound::TIMES::FORCE_ONCE);
 		}
 	}
 	// バーが止まった後
@@ -260,6 +274,9 @@ void BattlePhase::UpdateEnemyTurn(void)
 			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 
 			battlePhase_ = COMMAND_SELECT;
+
+			// 決定音
+			SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 		}
 	}
 }
@@ -269,6 +286,10 @@ void BattlePhase::UpdateBattleEnd(void)
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
 		gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_STORY);
+		SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
+
+		// 決定音
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 	}
 }
 
@@ -322,6 +343,12 @@ void BattlePhase::ProsesSelectAttack(void)
 
 			// 敵にダメージを与える
 			enemy_->Damage(power);
+
+			// ダメージを与えられたときだけ攻撃音を鳴らす
+			if (power > 0)
+			{
+				SoundManager::GetInstance().Play(SoundManager::SRC::ATTACK_SE,Sound::TIMES::FORCE_ONCE);
+			}
 		}
 	}
 	else
@@ -333,6 +360,9 @@ void BattlePhase::ProsesSelectAttack(void)
 			{
 				//攻撃撃破結果を GameScene に記録！
 				gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
+
+				//決定音
+				SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 
 				//戦闘終了画面へ移行
 				battlePhase_ = BATTLE_END;
@@ -374,6 +404,9 @@ void BattlePhase::ProsesSelectTalk(void)
 			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 			battlePhase_ = ENEMY_TURN;
 		}
+
+		// 決定音
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 	}
 }
 
@@ -398,5 +431,8 @@ void BattlePhase::ProsesSelectRun(void)
 			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 			battlePhase_ = ENEMY_TURN;
 		}
+
+		// 決定音
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 	}
 }

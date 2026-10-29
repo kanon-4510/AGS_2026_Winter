@@ -54,7 +54,16 @@ void TitleScene::Draw(void)
 
 		DrawString(TITLE_MESSAGE_X, TITLE_MESSAGE_Y, "ゲーム開始", Color::WHITE);
 
-		DrawString(TITLE_MESSAGE_X, Application::SCREEN_SIZE_Y - 100, "ゲーム終了", Color::WHITE);
+		if (modeIndex_ == 0)
+		{
+			DrawString(MODE_TEXT_X, MODE_TEXT_Y, "モード：STORY", Color::WHITE);
+		}
+		else
+		{
+			DrawString(MODE_TEXT_X, MODE_TEXT_Y, "モード：BATTLE", Color::WHITE);
+		}
+
+		DrawString(TITLE_MESSAGE_X, Application::SCREEN_SIZE_Y - 60, "ゲーム終了", Color::WHITE);
 	}
 	else if (mode_ == TITLE_MODE::EXIT)
 	{
@@ -77,22 +86,39 @@ void TitleScene::Release(void)
 
 void TitleScene::ProcessTitleSelection(void)
 {
+	//現在の選択肢を整数型に変換
+	int index = static_cast<int>(titleSelection_);
+
 	//ゲームを始めるか終了するかの操作処理
 	if (ins_.IsTrgDown(KEY_INPUT_UP) ||
 		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_UP))
 	{
-		int index = static_cast<int>(titleSelection_);
 		index = (index + (static_cast<int>(TITLE_SELECTION::MAX) - 1)) % static_cast<int>(TITLE_SELECTION::MAX);
 		titleSelection_ = static_cast<TITLE_SELECTION>(index);
 		normalOffset_ = index * OFFSET_ARROW; //矢印のオフセット値を更新
+
+		//カーソル音
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 	else if (ins_.IsTrgDown(KEY_INPUT_DOWN) ||
 		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_DOWN))
 	{
-		int index = static_cast<int>(titleSelection_);
 		index = (index + 1) % static_cast<int>(TITLE_SELECTION::MAX);
 		titleSelection_ = static_cast<TITLE_SELECTION>(index);
 		normalOffset_ = index * OFFSET_ARROW; //矢印のオフセット値を更新
+
+		//カーソル音
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
+	}
+
+	if (index == 1)
+	{
+		if (ins_.IsTrgDown(KEY_INPUT_RETURN) ||
+			ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DOWN))
+		{
+			//矢印のオフセットの位置を決める
+			modeIndex_ = 1 - modeIndex_;
+		}
 	}
 }
 
@@ -106,9 +132,19 @@ void TitleScene::ProcessTitleDecision(void)
 		switch (titleSelection_)
 		{
 		case TitleScene::START_GAME:
-
 			//ゲームシーンへ遷移
-			SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
+			if(modeIndex_ == 0)
+			{
+				//STORYモード
+				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
+			}
+			else
+			{
+				//BATTLEモード
+				//SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
+			}
+			break;
+		case TitleScene::MODE_SELECT:
 			break;
 		case TitleScene::EXIT_GAME:
 			mode_ = TITLE_MODE::EXIT;
@@ -118,49 +154,6 @@ void TitleScene::ProcessTitleDecision(void)
 		default:
 			break;
 		}
-	}
-}
-
-void TitleScene::Tutorial(void)
-{
-	//上下キーで切り替える
-	if (ins_.IsTrgDown(KEY_INPUT_UP) || ins_.IsTrgDown(KEY_INPUT_DOWN) ||
-		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_UP) ||
-		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DG_DOWN))
-	{
-		//矢印のオフセットの位置を決める
-		tutorialIndex_ = 1 - tutorialIndex_;
-		if (tutorialIndex_ == 0)
-		{
-			tutorialOffsetX_ = 0; //矢印のオフセット値を更新
-			tutorialOffsetY_ = tutorialIndex_ * OFFSET_ARROW; //矢印のオフセット値を更新
-		}
-		else
-		{
-			tutorialOffsetX_ = TUTORIAL_ARROW_OFFSET_X; //矢印のオフセット値を更新
-			tutorialOffsetY_ = tutorialIndex_ * OFFSET_ARROW; //矢印のオフセット値を更新
-		}
-	}
-
-	//最終決定
-	if (ins_.IsTrgDown(KEY_INPUT_RETURN) ||
-		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DOWN))
-	{
-		if (tutorialIndex_ == 0)
-		{
-			//ゲームシーンへ遷移
-			SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
-		}
-		else
-		{
-			//チュートリアルON/OFFを切り替える
-			SceneManager::GetInstance().ToggleTutorial();
-		}
-	}
-	else if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_TAB) ||
-		ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::RIGHT))
-	{
-		mode_ = TITLE_MODE::NORMAL;
 	}
 }
 
@@ -174,6 +167,9 @@ void TitleScene::ExitGame(void)
 		//矢印のオフセットの位置を決める
 		confirmIndex_ = 1 - confirmIndex_;	//0と1を反転させる
 		exitOffset_ = confirmIndex_ * -EXIT_OPTION_SPACING_X; //矢印のオフセット値を更新
+
+		//カーソル音
+		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 
 	//最終決定

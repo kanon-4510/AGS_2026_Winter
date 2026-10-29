@@ -3,6 +3,7 @@
 #include "../../Utility/ASOUtility.h"
 #include "../../Manager/InputManager.h"
 #include "../../Manager/SceneManager.h"
+#include "../../Manager/SoundManager.h"
 #include "../GameScene.h"
 #include "StoryPhase.h"
 
@@ -247,6 +248,10 @@ void StoryPhase::UpdateMainStory(void)
 	// Enterキーが押されたらテキストを送る
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
+
+		// 決定音
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+
 		if (currentLineIndex_ < dialogueList_.size())
 		{
 			// イベントタグのチェック

@@ -27,44 +27,50 @@ void SoundManager::Init(void)
 	Sound res;
 
 	//タイトルBGM
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Title_BGM.mp3");
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "TitleBGM.mp3");
 	res.ChangeMaxVolume(0.5);
 	soundMap_.emplace(SRC::TITLE_BGM, res);
 
-	//ゲームシーンBGM
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Game_BGM.mp3");
-	res.ChangeMaxVolume(0.8);
+	// ゲームBGM
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "GameBGM.mp3");
+	res.ChangeMaxVolume(0.5);
 	soundMap_.emplace(SRC::GAME_BGM, res);
 
-	//クエストBGM
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Quest_BGM.mp3");
-	res.ChangeMaxVolume(0.55);
-	soundMap_.emplace(SRC::QUEST_BGM, res);
-
-	//ゲームクリアBGM
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Clear_BGM.mp3");
-	res.ChangeMaxVolume(0.8);
+	// ゲームクリアBGM
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "GameClearBGM.mp3");
+	res.ChangeMaxVolume(0.5);
 	soundMap_.emplace(SRC::GAMECLEAR_BGM, res);
 
-	//ゲームオーバーBGM
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Over_BGM.mp3");
-	res.ChangeMaxVolume(0.8);
+	// ゲームオーバーBGM
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "GameOverBGM.mp3");
+	res.ChangeMaxVolume(0.5);
 	soundMap_.emplace(SRC::GAMEOVER_BGM, res);
 
-	//選択SE
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Select_SE.mp3");
-	res.ChangeMaxVolume(0.8);
+	// カーソル移動
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Cursor.mp3");
+	res.ChangeMaxVolume(1.0);
+	soundMap_.emplace(SRC::CURSOR_SE, res);
+
+	// 決定
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Select.mp3");
+	res.ChangeMaxVolume(1.0);
 	soundMap_.emplace(SRC::SELECT_SE, res);
 
-	//ダメージSE
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Damage_SE.mp3");
-	res.ChangeMaxVolume(0.8);
-	soundMap_.emplace(SRC::DAMAGE_SE, res);
-	
-	//攻撃SE
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Attack_SE.mp3");
-	res.ChangeMaxVolume(0.8);
+	// 攻撃SE
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Attack.mp3");
+	res.ChangeMaxVolume(0.5);
 	soundMap_.emplace(SRC::ATTACK_SE, res);
+	
+	// クリティカル攻撃
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "CriticalAttack.mp3");
+	res.ChangeMaxVolume(0.5);
+	soundMap_.emplace(SRC::CRITICALATTACK_SE, res);
+
+	// ダメージSE
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Damage.mp3");
+	res.ChangeMaxVolume(0.5);
+	soundMap_.emplace(SRC::DAMAGE_SE, res);
+
 }
 
 void SoundManager::Release(void)
