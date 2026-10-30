@@ -70,6 +70,9 @@ void ResourceManager::Init(void)
 	resourcesMap_.emplace(SRC::MESSAGE_BOX, std::move(res));
 	//コマンドメニュー
 	//------------------------------------
+	//カーソル(ハート)
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + "UI/Heart.png");
+	resourcesMap_.emplace(SRC::CURSOR, std::move(res));
 	//攻撃
 	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + "UI/Attack.png");
 	resourcesMap_.emplace(SRC::COMMAND_ATTACK, std::move(res));
