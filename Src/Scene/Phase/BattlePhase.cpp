@@ -40,6 +40,7 @@ void BattlePhase::Init(void)
 	//音楽
 	SoundManager::GetInstance().Play(SoundManager::SRC::GAME_BGM, Sound::TIMES::LOOP);
 
+	cursorImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::CURSOR).handleId_;
 	attackImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_ATTACK).handleId_;
 	talkImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_TALK).handleId_;
 	escapeImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_ESCAPE).handleId_;
@@ -296,10 +297,10 @@ void BattlePhase::UpdateBattleEnd(void)
 void BattlePhase::DrawCommandSelect(void)
 {
 	//コマンド選択の描画処理
+	DrawGraph(ARROW_POS_X + ARROW_OFFSET * selectedIndex_, ARROW_POS_Y, cursorImage_, true);
 	DrawGraph(GameScene::COMMAND_ATTACK_X, GameScene::COMMAND_MENU_Y, attackImage_, true);
 	DrawGraph(GameScene::COMMAND_TALK_X, GameScene::COMMAND_MENU_Y, talkImage_, true);
 	DrawGraph(GameScene::COMMAND_ESCAPE_X, GameScene::COMMAND_MENU_Y, escapeImage_, true);
-	DrawFormatString(ARROW_POS_X + ARROW_OFFSET * selectedIndex_, GameScene::COMMAND_MENU_Y, 0xffffff, "→");
 }
 
 void BattlePhase::DrawPlayerTurn(void)

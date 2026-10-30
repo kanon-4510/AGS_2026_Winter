@@ -30,6 +30,7 @@ public:
 		//メッセージボックス
 		MESSAGE_BOX,
 		//コマンドメニュー
+		CURSOR,
 		COMMAND_ATTACK,
 		COMMAND_TALK,
 		COMMAND_ESCAPE,
