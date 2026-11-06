@@ -33,8 +33,9 @@ public:
 
 	static constexpr int MAX_COMMANDS = 3;		//コマンドの最大数
 
-	static constexpr int ARROW_POS_X = 295; //矢印の表示位置
-	static constexpr int ARROW_OFFSET = 225; //矢印のオフセット
+	static constexpr int ARROW_POS_X = 275;		//矢印座標X
+	static constexpr int ARROW_POS_Y = 628;		//矢印座標Y
+	static constexpr int ARROW_OFFSET = 225;	//矢印のオフセット
 
 	BattlePhase(GameScene& gameScene);
 	~BattlePhase();
@@ -67,6 +68,7 @@ private:
 
 	int selectedIndex_ = 0;			//選択中のコマンドのインデックス
 
+	int cursorImage_;				//カーソル画像
 	int attackImage_;				//攻撃画像
 	int talkImage_;					//会話画像
 	int escapeImage_;				//逃走画像
