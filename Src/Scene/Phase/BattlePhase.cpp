@@ -77,6 +77,7 @@ void BattlePhase::Draw(void)
 	DrawString(100, 100, "Battle Phase", GetColor(255, 0, 0));
 	DrawFormatString(700,120,0xFFFFFF,"Enemy HP: %d",enemy_->GetHP());
 	DrawFormatString(0,120,0xFFFFFF,"Wave Count: %d",gameScene_.GetWaveCount());
+	DrawFormatString(0, 150, 0xFFFFFF, "Talk Success Count: %s", currentMessage_.c_str());
 
 	// メッセージ枠およびアクションゲージの描画領域指定（例: 画面下部）
 	int winX = 100, winY = 360, winW = 600, winH = 180;
@@ -271,7 +272,7 @@ void BattlePhase::UpdateEnemyTurn(void)
 		{
 			battleTurnCnt_++;
 
-			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+			actionGauge_.Reset();;
 
 			battlePhase_ = COMMAND_SELECT;
 
@@ -285,9 +286,11 @@ void BattlePhase::UpdateBattleEnd(void)
 {
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
+		//if(ストーリーモードの時)
 		gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_STORY);
 		SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
-
+		//else if(バトルモードの時) 
+		// 関数でWaveを進める
 		// 決定音
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 	}
@@ -329,9 +332,6 @@ void BattlePhase::ProsesSelectAttack(void)
 	// バーがまだ動いている最中の処理
 	if (actionGauge_.IsMoving())
 	{
-		float deltaTime = 1.0f / 60.0f;
-		actionGauge_.Update(deltaTime);
-
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
 			// ボタンが押されたらバーがその場に止まる
@@ -350,12 +350,18 @@ void BattlePhase::ProsesSelectAttack(void)
 				SoundManager::GetInstance().Play(SoundManager::SRC::ATTACK_SE,Sound::TIMES::FORCE_ONCE);
 			}
 		}
+		else
+		{
+			//ボタンが押されていないフレームだけ、バーを進める
+			float deltaTime = 1.0f / 60.0f;
+			actionGauge_.Update(deltaTime);
+		}
 	}
 	else
 	{
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
-			 //敵を倒していた場合
+			//敵を倒していた場合
 			if (enemy_->IsDead())
 			{
 				//攻撃撃破結果を GameScene に記録！
@@ -369,12 +375,12 @@ void BattlePhase::ProsesSelectAttack(void)
 				return;
 			}
 
-        battleTurnCnt_++;
+			battleTurnCnt_++;
 
-		actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 
-        battlePhase_ = ENEMY_TURN;
-    }
+			battlePhase_ = ENEMY_TURN;
+		}
 	}
 }
 
@@ -387,7 +393,7 @@ void BattlePhase::ProsesSelectTalk(void)
 			talkSuccessCount_++;
 		}
 
-		if (talkSuccessCount_ >= 1)
+		if (talkSuccessCount_ >= 4)
 		{
 			currentMessage_ = "相手は戦意を喪失した！";
 

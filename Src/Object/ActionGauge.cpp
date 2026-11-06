@@ -103,7 +103,7 @@ void ActionGauge::Draw()
     // --------------------------------------------------
     if (isVisible_) { // ★ isActive_ から isVisible_ に変更
         unsigned int colorGreen = GetColor(80, 200, 80);   // 緑 (GOOD)
-        unsigned int colorYellow = GetColor(255, 220, 0);   // 黄 (GREAT)
+        unsigned int colorYellow = GetColor(255, 220, 0);  // 黄 (GREAT)
         unsigned int colorRed = GetColor(255, 60, 60);    // 赤 (PERFECT)
 
         // ゾーン描画処理
@@ -120,7 +120,7 @@ void ActionGauge::Draw()
         // 動くバー（ポインタ）描画
         // isMoving_ が false になっても、押した時点の barPosition_ の位置で描画され続ける
         int currentX = GAUGE_X + static_cast<int>(barPosition_ * GAUGE_WIDTH);
-        DrawLine(currentX, GAUGE_Y - 4, currentX, GAUGE_Y + GAUGE_HEIGHT + 4, GetColor(255, 255, 255), 4);
+        DrawLine(currentX, GAUGE_Y - 4, currentX, GAUGE_Y + GAUGE_HEIGHT + 4, GetColor(255, 255, 255), 6);
     }
 }
 

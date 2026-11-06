@@ -73,6 +73,9 @@ private:
 	void UpdateSelectRoute(void);	//次に進む道を選択するための関数
 	void UpdateEnding(void);		//エンディングの更新処理
 
+	//ストーリーのスキップ機能
+	void SkipStory(void);
+
 	void JumpToTag(const std::string& targetTag);
 };
 
