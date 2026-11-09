@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "../Application.h"
+#include "../Manager/ResourceManager.h"
 #include "../Manager/SceneManager.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/SoundManager.h"
@@ -21,7 +22,8 @@
 //初期化処理
 void TitleScene::Init(void)
 {
-	titleImage_ = LoadGraph("Data/Image/Title.png");
+	titleImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::GAME_TITLE).handleId_;
+
 	tutorialOffsetX_ = 0; //矢印のオフセット値を更新
 	//音楽
 	SoundManager::GetInstance().Play(SoundManager::SRC::TITLE_BGM, Sound::TIMES::LOOP);
@@ -44,6 +46,7 @@ void TitleScene::Update(void)
 //描画処理
 void TitleScene::Draw(void)
 {
+	
 	DrawGraph(0, 0, titleImage_, true);
 
 	SetFontSize(FONT_SIZE);
