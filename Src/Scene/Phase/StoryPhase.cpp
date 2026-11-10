@@ -93,12 +93,9 @@ void StoryPhase::Init()
 void StoryPhase::Update()
 {
 	// スペースキーで次の戦闘に進む(デバッグ)
-	if (ins_.IsTrgDown(KEY_INPUT_SPACE))
+	if (ins_.IsNew(KEY_INPUT_SPACE))
 	{
-		gameScene_.NextWave();
-		gameScene_.StartNextBattle();
-		gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
-		return;
+		SkipStory();
 	}
 	switch (storyPhase_)
 	{
@@ -381,6 +378,13 @@ void StoryPhase::UpdateEnding(void)
 				storyPhase_ = SELECT_ROUTE;
 				return;
 			}
+			else if (tag == "JUMP_MESS")
+			{
+				std::string nextTag = dialogueList_[currentLineIndex_].eventTag;
+
+				JumpToTag("MESS_POINT"); // 実際の合流地点のタグへジャンプ
+				return;
+			}
 			else if (tag == "START_BATTLE")
 			{
 				gameScene_.NextWave();
@@ -393,6 +397,49 @@ void StoryPhase::UpdateEnding(void)
 			currentLineIndex_++;
 		}
 	}
+}
+
+void StoryPhase::SkipStory(void)
+{
+	if (currentLineIndex_ < dialogueList_.size())
+	{
+		std::string tag = dialogueList_[currentLineIndex_].eventTag;
+
+		// 止まるべき重要なイベント（選択肢、戦闘、エンディングなど）に遭遇したら早送り解除（ストップ）
+		if (tag == "SELECT_ROUTE" || tag == "START_BATTLE" || tag == "END_GAME" || tag == "BAD_END")
+		{
+			// ここで処理を抜けると、ちょうど選択肢や戦闘の画面でピタッと止まります
+			return;
+		}
+
+		// その他の制御タグの処理
+		if (tag == "JUMP_MESS")
+		{
+			JumpToTag("MESS_POINT");
+			return;
+		}
+		else if (tag == "GO_NEXT_WAVE")
+		{
+			gameScene_.NextWave();
+			gameScene_.SetReturnFromBattle(false);
+			Init();
+			return;
+		}
+
+		// テキストを1行進める（早送りなのでフレームごとに自動で進む）
+		currentLineIndex_++;
+
+		if (currentLineIndex_ < dialogueList_.size())
+		{
+			std::string nextTag = dialogueList_[currentLineIndex_].eventTag;
+			if (nextTag == "SKIP_TEXT")
+			{
+				JumpToTag("GO_NEXT_WAVE");
+				return;
+			}
+		}
+	}
+	return; // 早送り中は通常のEnter入力を受け付けないようにする
 }
 
 // 目的のタグがある行までインデックスをスキップする補助関数
