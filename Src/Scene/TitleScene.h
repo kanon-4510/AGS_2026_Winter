@@ -87,7 +87,7 @@ private:
 	//メンバー変数
 	int titleImage_;		//タイトル画像の格納領域
 	int currentSelection_;	//現在の選択肢
-	int modeIndex_ = 0;		//0：STORY,1：BATTLE
+	//bool isStory_ = true;	//truue：STORY,false：BATTLE
 	int confirmIndex_ = 0;	//ゲーム終了確認の選択肢インデックス
 
 	void ProcessTitleSelection(void);	//タイトル選択の処理

@@ -288,12 +288,20 @@ void BattlePhase::UpdateBattleEnd(void)
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
 		//if(ストーリーモードの時)
-		gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_STORY);
-		SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
-		//else if(バトルモードの時) 
-		// 関数でWaveを進める
-		// 決定音
-		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+		if (gameScene_.IsStory())
+		{
+			gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_STORY);
+			SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
+			
+			// 決定音
+			SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+		}
+		else
+		{
+			gameScene_.NextWave();
+			gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
+		}
+		
 	}
 }
 
