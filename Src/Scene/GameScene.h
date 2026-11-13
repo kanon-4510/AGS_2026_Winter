@@ -91,6 +91,9 @@ public:
 	bool IsEnemyUsed(int index) const;
 	void SetEnemyUsed(int index);
 
+	// ストーリーモードかどうかを取得
+	bool IsStory() const;
+
 private:
 
 	InputManager& ins_ = InputManager::GetInstance();

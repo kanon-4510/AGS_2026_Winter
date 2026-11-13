@@ -57,7 +57,7 @@ void TitleScene::Draw(void)
 
 		DrawString(TITLE_MESSAGE_X, TITLE_MESSAGE_Y, "ゲーム開始", Color::WHITE);
 
-		if (modeIndex_ == 0)
+		if (SceneManager::GetInstance().IsStoryMode())
 		{
 			DrawString(MODE_TEXT_X, MODE_TEXT_Y, "モード：STORY", Color::WHITE);
 		}
@@ -119,8 +119,8 @@ void TitleScene::ProcessTitleSelection(void)
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN) ||
 			ins_.IsPadBtnTrgDown(InputManager::JOYPAD_NO::PAD1, InputManager::JOYPAD_BTN::DOWN))
 		{
-			//矢印のオフセットの位置を決める
-			modeIndex_ = 1 - modeIndex_;
+			//モードを切り替える
+			SceneManager::GetInstance().ToggleStoryMode();
 		}
 	}
 }
@@ -136,16 +136,8 @@ void TitleScene::ProcessTitleDecision(void)
 		{
 		case TitleScene::START_GAME:
 			//ゲームシーンへ遷移
-			if(modeIndex_ == 0)
-			{
-				//STORYモード
-				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
-			}
-			else
-			{
-				//BATTLEモード
-				//SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
-			}
+			//STORYモード
+			SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
 			break;
 		case TitleScene::MODE_SELECT:
 			break;

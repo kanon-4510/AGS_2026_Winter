@@ -53,7 +53,14 @@ void GameScene::Init(void)
 	stageImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::GAME_SCENE).handleId_;
 	messageBoxImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::MESSAGE_BOX).handleId_;
 
-	ChangePhase(QUEST_PHASE::PHASE_STORY);
+	if (SceneManager::GetInstance().IsStoryMode())
+	{
+		ChangePhase(QUEST_PHASE::PHASE_STORY);
+	}
+	else
+	{
+		ChangePhase(QUEST_PHASE::PHASE_BATTLE);
+	}
 }
 
 //çXêVèàóù
@@ -169,4 +176,9 @@ bool GameScene::IsEnemyUsed(int index) const
 void GameScene::SetEnemyUsed(int index)
 {
 	usedEnemies_[index] = true;
+}
+
+bool GameScene::IsStory() const
+{
+	return SceneManager::GetInstance().IsStoryMode();
 }

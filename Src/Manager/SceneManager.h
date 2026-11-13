@@ -47,6 +47,11 @@ public:
 	bool IsTutorialEnabled() const { return isTutorial_; }
 	void ToggleTutorial() { isTutorial_ = !isTutorial_; }
 
+	//ストーリーモードのON/OFFを切り替える関数を追加
+	bool IsStoryMode() const { return isStory_; }
+	void ToggleStoryMode() { isStory_ = !isStory_; }
+	bool isStory_ = true;
+
 private:
 
 	// 静的インスタンス
