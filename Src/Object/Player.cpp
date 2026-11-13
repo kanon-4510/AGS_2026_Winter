@@ -85,3 +85,8 @@ int Player::GetMaxHp()
 {
 	return maxHp_;
 }
+
+int Player::GetHP()
+{
+	return hp_;
+}

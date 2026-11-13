@@ -71,6 +71,16 @@ void SoundManager::Init(void)
 	res.ChangeMaxVolume(0.5);
 	soundMap_.emplace(SRC::DAMAGE_SE, res);
 
+	// パリィSE
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Parry.mp3");
+	res.ChangeMaxVolume(0.75);
+	soundMap_.emplace(SRC::PARRY_SE, res);
+
+	// 攻撃ミス
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "Miss.mp3");
+	res.ChangeMaxVolume(5.0);
+	soundMap_.emplace(SRC::MISS_SE, res);
+
 }
 
 void SoundManager::Release(void)

@@ -64,6 +64,11 @@ private:
 	int battleTurnCnt_;				//バトルのターン数をカウント
 	int talkSuccessCount_ = 0;		//現在の説得成功回数
 
+	float damageFlashTimer_ = 0.0f;	//被ダメージ時の画面フラッシュ
+
+	const float DAMAGE_FLASH_DURATION = 0.15f;
+	const int DAMAGE_FLASH_MAX_ALPHA = 100;
+
 	void SpawnEnemy();				// 敵の初期化処理
 
 	int selectedIndex_ = 0;			//選択中のコマンドのインデックス

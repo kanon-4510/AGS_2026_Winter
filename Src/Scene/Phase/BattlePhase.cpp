@@ -54,6 +54,17 @@ void BattlePhase::Update(void)
 		enemy_->Update();
 	}
 
+	// ダメージフラッシュの更新
+	if (damageFlashTimer_ > 0.0f)
+	{
+		damageFlashTimer_ -= 1.0f / 60.0f;
+
+		if (damageFlashTimer_ < 0.0f)
+		{
+			damageFlashTimer_ = 0.0f;
+		}
+	}
+
 	//フェーズごとの更新処理を呼び出す
 	switch (battlePhase_)
 	{
@@ -108,6 +119,25 @@ void BattlePhase::Draw(void)
 	case BattlePhase::BATTLE_END:
 		DrawString(100, GameScene::COMMAND_MENU_Y, "バトル終了", GetColor(255, 0, 0));
 		break;
+	}
+
+	// 被ダメージ時の赤フラッシュ
+	if (damageFlashTimer_ > 0.0f)
+	{
+		int screenWidth;
+		int screenHeight;
+
+		GetDrawScreenSize(&screenWidth, &screenHeight);
+
+		float rate = damageFlashTimer_ / DAMAGE_FLASH_DURATION;
+
+		int alpha =static_cast<int>(DAMAGE_FLASH_MAX_ALPHA * rate);
+
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+
+		DrawBox(0,0,screenWidth,screenHeight,GetColor(255, 0, 0),TRUE);
+
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 }
 
@@ -259,11 +289,30 @@ void BattlePhase::UpdateEnemyTurn(void)
 			// 防御処理
 			player_->Defense(rate);
 
+			// ダメージを受ける前のHP
+			int beforeHP = player_->GetHP();
+
 			// 敵の攻撃力を使ってダメージ計算
 			player_->Damage(enemy_->GetATK());
 
-			// 敵からのダメージ音
-			SoundManager::GetInstance().Play(SoundManager::SRC::CRITICALATTACK_SE, Sound::TIMES::FORCE_ONCE);
+			// ダメージを受けた後のHP
+			int afterHP = player_->GetHP();
+
+			// 実際にHPが減っていたら赤くする
+			int damage = beforeHP - afterHP;
+
+			if (damage > 0)
+			{
+				// ダメージを受けた場合
+				damageFlashTimer_ = DAMAGE_FLASH_DURATION;
+
+				SoundManager::GetInstance().Play(SoundManager::SRC::CRITICALATTACK_SE, Sound::TIMES::FORCE_ONCE);
+			}
+			else
+			{
+				// 防御成功音
+				SoundManager::GetInstance().Play(SoundManager::SRC::PARRY_SE, Sound::TIMES::FORCE_ONCE);
+			}
 		}
 	}
 	// バーが止まった後
@@ -349,6 +398,10 @@ void BattlePhase::ProsesSelectAttack(void)
 			if (power > 0)
 			{
 				SoundManager::GetInstance().Play(SoundManager::SRC::ATTACK_SE,Sound::TIMES::FORCE_ONCE);
+			}
+			else
+			{
+				SoundManager::GetInstance().Play(SoundManager::SRC::MISS_SE, Sound::TIMES::FORCE_ONCE);
 			}
 		}
 		else

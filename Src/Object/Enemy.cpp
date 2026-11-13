@@ -128,6 +128,17 @@ void Enemy::Update()
 	{
 		animationTime_ -= ANIMATION_TOTAL_TIME;
 	}
+
+	// ダメージ時の揺れ時間を減らす
+	if (damageShakeTimer_ > 0.0f)
+	{
+		damageShakeTimer_ -= 1.0f / 60.0f;
+
+		if (damageShakeTimer_ < 0.0f)
+		{
+			damageShakeTimer_ = 0.0f;
+		}
+	}
 }
 
 void Enemy::Draw()
@@ -135,6 +146,19 @@ void Enemy::Draw()
 	if (!isAlive_)
 	{
 		return;
+	}
+
+	// ダメージ時の揺れ量を計算
+	float shakeOffset = 0.0f;
+
+	if (damageShakeTimer_ > 0.0f)
+	{
+		float rate = damageShakeTimer_ / damageShakeDuration_;
+
+		shakeOffset =
+			sinf(damageShakeTimer_ * 80.0f)
+			* damageShakePower_
+			* rate;
 	}
 
 	if (imageHandle_ != -1)
@@ -214,13 +238,16 @@ void Enemy::Draw()
 			moveY = 0;
 		}
 
+		int drawCenterX =
+			ENEMY_CENTER_X + static_cast<int>(shakeOffset);
+
 		int drawCenterY =
 			ENEMY_CENTER_Y + moveY;
 
 		DrawExtendGraph(
-			ENEMY_CENTER_X - drawWidth / 2,
+			drawCenterX - drawWidth / 2,
 			drawCenterY - drawHeight / 2,
-			ENEMY_CENTER_X + drawWidth / 2,
+			drawCenterX + drawWidth / 2,
 			drawCenterY + drawHeight / 2,
 			imageHandle_,
 			TRUE
@@ -258,21 +285,20 @@ void Enemy::Release()
 
 void Enemy::Damage(int damage)
 {
-	if (!isAlive_)
-	{
-		return;
-	}
-
-	if (damage < 0)
-	{
-		damage = 0;
-	}
+	if (!isAlive_ || damage <= 0) return;
 
 	hp_ -= damage;
 
-	if (hp_ <= 0)
+	if (hp_ < 0)
 	{
 		hp_ = 0;
+	}
+
+	// ダメージを受けたときの揺れを開始
+	damageShakeTimer_ = damageShakeDuration_;
+
+	if (hp_ <= 0)
+	{
 		isAlive_ = false;
 	}
 }

@@ -109,6 +109,11 @@ private:
 	// アニメーション
 	float animationTime_;
 
+	// ダメージ時の揺れ
+	float damageShakeTimer_ = 0.0f;
+	float damageShakeDuration_ = 0.25f;
+	float damageShakePower_ = 15.0f;
+
 	// 仮表示用
 	int x_;
 	int y_;

@@ -19,7 +19,9 @@ public:
 		DAMAGE_SE,
 		ATTACK_SE,
 		CRITICALATTACK_SE,
-		CURSOR_SE
+		CURSOR_SE,
+		PARRY_SE,
+		MISS_SE
 	};
 
 	// 明示的にインステンスを生成する
