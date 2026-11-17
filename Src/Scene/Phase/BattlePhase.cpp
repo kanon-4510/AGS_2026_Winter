@@ -1,4 +1,4 @@
-#include <DxLib.h>
+ï»¿#include <DxLib.h>
 #include <string>
 #include <sstream>
 #include "../../Manager/InputManager.h"
@@ -42,7 +42,7 @@ void BattlePhase::Init(void)
 		currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "START_BATTLE");
 	}
 
-	//‰¹Šy
+	//éŸ³æ¥½
 	SoundManager::GetInstance().Play(SoundManager::SRC::GAME_BGM, Sound::TIMES::LOOP);
 
 	cursorImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::CURSOR).handleId_;
@@ -53,13 +53,13 @@ void BattlePhase::Init(void)
 
 void BattlePhase::Update(void)
 {
-	// “G‚ÌXV
+	// æ•µã®æ›´æ–°
 	if (enemy_)
 	{
 		enemy_->Update();
 	}
 
-	// ƒ_ƒ[ƒWƒtƒ‰ƒbƒVƒ…‚ÌXV
+	// ãƒ€ãƒ¡ãƒ¼ã‚¸ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ã®æ›´æ–°
 	if (damageFlashTimer_ > 0.0f)
 	{
 		damageFlashTimer_ -= 1.0f / 60.0f;
@@ -70,7 +70,7 @@ void BattlePhase::Update(void)
 		}
 	}
 
-	//ƒtƒF[ƒY‚²‚Æ‚ÌXVˆ—‚ğŒÄ‚Ño‚·
+	//ãƒ•ã‚§ãƒ¼ã‚ºã”ã¨ã®æ›´æ–°å‡¦ç†ã‚’å‘¼ã³å‡ºã™
 	switch (battlePhase_)
 	{
 	case BattlePhase::COMMAND_SELECT:
@@ -96,16 +96,16 @@ void BattlePhase::Draw(void)
 	DrawFormatString(0,120,0xFFFFFF,"Wave Count: %d",gameScene_.GetWaveCount());
 	//DrawFormatString(0, 150, 0xFFFFFF, "Talk Success Count: %s", currentMessage_.c_str());
 
-	// ƒƒbƒZ[ƒW˜g‚¨‚æ‚ÑƒAƒNƒVƒ‡ƒ“ƒQ[ƒW‚Ì•`‰æ—Ìˆæw’èi—á: ‰æ–Ê‰º•”j
+	// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ ãŠã‚ˆã³ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚²ãƒ¼ã‚¸ã®æç”»é ˜åŸŸæŒ‡å®šï¼ˆä¾‹: ç”»é¢ä¸‹éƒ¨ï¼‰
 	int winX = 100, winY = 360, winW = 600, winH = 180;
 
 	//DrawMultilineText(275, 700, currentMessage_, GetColor(255, 255, 255), 24);
 	DrawString(275, 700, currentMessage_.c_str(), GetColor(255, 255, 255));
 
-	//ƒAƒNƒVƒ‡ƒ“ƒQ[ƒW˜gií•\¦j
+	//ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚²ãƒ¼ã‚¸æ ï¼ˆå¸¸æ™‚è¡¨ç¤ºï¼‰
 	actionGauge_.Draw();
 
-	// “G‚ğ•`‰æ
+	// æ•µã‚’æç”»
 	if (enemy_)
 	{
 		enemy_->Draw();
@@ -125,11 +125,11 @@ void BattlePhase::Draw(void)
 		DrawEnemyTurn();
 		break;
 	case BattlePhase::BATTLE_END:
-		DrawString(100, GameScene::COMMAND_MENU_Y, "ƒoƒgƒ‹I—¹", GetColor(255, 0, 0));
+		DrawString(100, GameScene::COMMAND_MENU_Y, "ãƒãƒˆãƒ«çµ‚äº†", GetColor(255, 0, 0));
 		break;
 	}
 
-	// ”íƒ_ƒ[ƒW‚ÌÔƒtƒ‰ƒbƒVƒ…
+	// è¢«ãƒ€ãƒ¡ãƒ¼ã‚¸æ™‚ã®èµ¤ãƒ•ãƒ©ãƒƒã‚·ãƒ¥
 	if (damageFlashTimer_ > 0.0f)
 	{
 		int screenWidth;
@@ -157,16 +157,16 @@ void BattlePhase::SpawnEnemy()
 {
 	Enemy::TYPE type;
 
-	// GameScene‚©‚çŒ»İ‚Ìí“¬‰ñ”‚ğæ“¾
+	// GameSceneã‹ã‚‰ç¾åœ¨ã®æˆ¦é—˜å›æ•°ã‚’å–å¾—
 	int wave = gameScene_.GetWaveCount();
 
-	// ƒJƒGƒ‹
+	// ã‚«ã‚¨ãƒ«
 	if (wave == 1)
 	{
 		type = Enemy::TYPE::FROG;
 		gameScene_.SetEnemyUsed(0);
 	}
-	// ƒ{ƒX
+	// ãƒœã‚¹
 
 	else if (wave == 5)
 	{
@@ -176,7 +176,7 @@ void BattlePhase::SpawnEnemy()
 	{
 		type = Enemy::TYPE::PIKO;
 	}
-	// 2`4í–Ú‚Íd•¡‚È‚µ‚Åƒ‰ƒ“ƒ_ƒ€
+	// 2ï½4æˆ¦ç›®ã¯é‡è¤‡ãªã—ã§ãƒ©ãƒ³ãƒ€ãƒ 
 	else
 	{
 		int index;
@@ -221,23 +221,23 @@ void BattlePhase::SpawnEnemy()
 
 void BattlePhase::UpdateCommandSelect(void)
 {
-	//\šƒL[‚ÅƒRƒ}ƒ“ƒh‘I‘ğ‚ğs‚¤ˆ—
+	//åå­—ã‚­ãƒ¼ã§ã‚³ãƒãƒ³ãƒ‰é¸æŠã‚’è¡Œã†å‡¦ç†
 	if (ins_.IsTrgDown(KEY_INPUT_RIGHT))
 	{
 		selectedIndex_ = (selectedIndex_ + 1) % MAX_COMMANDS;
-		//ƒJ[ƒ\ƒ‹‰¹
+		//ã‚«ãƒ¼ã‚½ãƒ«éŸ³
 		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 	else if(ins_.IsTrgDown(KEY_INPUT_LEFT))
 	{
 		selectedIndex_ = (selectedIndex_ - 1 + MAX_COMMANDS) % MAX_COMMANDS;
-		//ƒJ[ƒ\ƒ‹‰¹
+		//ã‚«ãƒ¼ã‚½ãƒ«éŸ³
 		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		// ƒL[‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚¾‚¯ŠeƒRƒ}ƒ“ƒhˆ—‚ğŒÄ‚Ño‚·
+		// ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã¨ãã ã‘å„ã‚³ãƒãƒ³ãƒ‰å‡¦ç†ã‚’å‘¼ã³å‡ºã™
 		if (selectedIndex_ == 0)
 		{
 			commandType_ = ATTACK;
@@ -255,7 +255,7 @@ void BattlePhase::UpdateCommandSelect(void)
 			battlePhase_ = PLAYER_TURN;
 		}
 
-		//Œˆ’è‰¹
+		//æ±ºå®šéŸ³
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 
 		selectedIndex_ = 0;
@@ -280,7 +280,7 @@ void BattlePhase::UpdatePlayerTurn(void)
 
 void BattlePhase::UpdateEnemyTurn(void)
 {
-	// ƒo[‚ª‚Ü‚¾“®‚¢‚Ä‚¢‚éÅ’†
+	// ãƒãƒ¼ãŒã¾ã å‹•ã„ã¦ã„ã‚‹æœ€ä¸­
 	if (actionGauge_.IsMoving())
 	{
 		float deltaTime = 1.0f / 60.0f;
@@ -288,22 +288,22 @@ void BattlePhase::UpdateEnemyTurn(void)
 
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
-			// ƒQ[ƒW‚ğ~‚ß‚é
+			// ã‚²ãƒ¼ã‚¸ã‚’æ­¢ã‚ã‚‹
 			GaugeState state = actionGauge_.PressButton();
 
-			// –hŒä—¦‚ğæ“¾
+			// é˜²å¾¡ç‡ã‚’å–å¾—
 			float rate = ActionGauge::GetResultRate(state);
 
-			// –hŒäˆ—
+			// é˜²å¾¡å‡¦ç†
 			player_->Defense(rate);
 
-			// ƒ_ƒ[ƒW‚ğó‚¯‚é‘O‚ÌHP
+			// ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹å‰ã®HP
 			int beforeHP = player_->GetHP();
 
-			// “G‚ÌUŒ‚—Í‚ğg‚Á‚Äƒ_ƒ[ƒWŒvZ
+			// æ•µã®æ”»æ’ƒåŠ›ã‚’ä½¿ã£ã¦ãƒ€ãƒ¡ãƒ¼ã‚¸è¨ˆç®—
 			player_->Damage(enemy_->GetATK());
 
-			// ƒ_ƒ[ƒW‚ğó‚¯‚½Œã‚ÌHP
+			// ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ãŸå¾Œã®HP
 			int afterHP = player_->GetHP();
 
 			int damage = beforeHP - afterHP;
@@ -319,10 +319,10 @@ void BattlePhase::UpdateEnemyTurn(void)
 				SoundManager::GetInstance().Play(SoundManager::SRC::PARRY_SE,Sound::TIMES::FORCE_ONCE);
 			}
 		}
-		// ƒo[‚ªÅŒã‚Ü‚Å“®‚¢‚Ä‚àEnter‚ğ‰Ÿ‚³‚È‚©‚Á‚½ê‡
+		// ãƒãƒ¼ãŒæœ€å¾Œã¾ã§å‹•ã„ã¦ã‚‚Enterã‚’æŠ¼ã•ãªã‹ã£ãŸå ´åˆ
 		else if (!actionGauge_.IsMoving())
 		{
-			// –hŒä¸”s‚Æ‚µ‚Äˆµ‚¤
+			// é˜²å¾¡å¤±æ•—ã¨ã—ã¦æ‰±ã†
 			player_->Defense(0.0f);
 
 			int beforeHP = player_->GetHP();
@@ -339,7 +339,7 @@ void BattlePhase::UpdateEnemyTurn(void)
 			SoundManager::GetInstance().Play(SoundManager::SRC::CRITICALATTACK_SE,Sound::TIMES::FORCE_ONCE);
 		}
 	}
-	// ƒo[‚ª~‚Ü‚Á‚½Œã
+	// ãƒãƒ¼ãŒæ­¢ã¾ã£ãŸå¾Œ
 	else
 	{
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
@@ -359,13 +359,13 @@ void BattlePhase::UpdateBattleEnd(void)
 {
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		//if(ƒXƒg[ƒŠ[ƒ‚[ƒh‚Ì)
+		//if(ã‚¹ãƒˆãƒ¼ãƒªãƒ¼ãƒ¢ãƒ¼ãƒ‰ã®æ™‚)
 		if (gameScene_.IsStory())
 		{
 			gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_STORY);
 			SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
 			
-			// Œˆ’è‰¹
+			// æ±ºå®šéŸ³
 			SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 		}
 		else
@@ -379,7 +379,7 @@ void BattlePhase::UpdateBattleEnd(void)
 
 void BattlePhase::DrawCommandSelect(void)
 {
-	//ƒRƒ}ƒ“ƒh‘I‘ğ‚Ì•`‰æˆ—
+	//ã‚³ãƒãƒ³ãƒ‰é¸æŠã®æç”»å‡¦ç†
 	DrawGraph(ARROW_POS_X + ARROW_OFFSET * selectedIndex_, ARROW_POS_Y, cursorImage_, true);
 	DrawGraph(GameScene::COMMAND_ATTACK_X, GameScene::COMMAND_MENU_Y, attackImage_, true);
 	DrawGraph(GameScene::COMMAND_TALK_X, GameScene::COMMAND_MENU_Y, talkImage_, true);
@@ -388,15 +388,15 @@ void BattlePhase::DrawCommandSelect(void)
 
 void BattlePhase::DrawPlayerTurn(void)
 {
-	//ƒvƒŒƒCƒ„[‚Ìƒ^[ƒ“‚Ì•`‰æˆ—
-	DrawString(100, 130, "ƒvƒŒƒCƒ„[ƒ^[ƒ“",0xFFFFFF);
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¿ãƒ¼ãƒ³ã®æç”»å‡¦ç†
+	DrawString(100, 130, "ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¿ãƒ¼ãƒ³",0xFFFFFF);
 	DrawFormatString(100, GameScene::COMMAND_MENU_Y, 0xFFFFFF, "CommandType: %d", commandType_);
 }
 
 void BattlePhase::DrawEnemyTurn(void)
 {
-	//“G‚Ìƒ^[ƒ“‚Ì•`‰æˆ—
-	DrawString(100, 130, "“G‚Ìƒ^[ƒ“", 0xFFFFFF);
+	//æ•µã®ã‚¿ãƒ¼ãƒ³ã®æç”»å‡¦ç†
+	DrawString(100, 130, "æ•µã®ã‚¿ãƒ¼ãƒ³", 0xFFFFFF);
 }
 
 void BattlePhase::DrawMultilineText(int x, int y, const std::string& text, unsigned int color, int lineHeight)
@@ -414,126 +414,39 @@ void BattlePhase::DrawMultilineText(int x, int y, const std::string& text, unsig
 
 void BattlePhase::ProsesSelectAttack(void)
 {
+	//ã™ã§ã«æ•µã‚’å€’ã—ã¦ã„ã‚‹å ´åˆã®å³åº§ã®çµ‚äº†åˆ¤å®š
 	if (enemy_->IsDead())
 	{
-		//UŒ‚Œ‚”jŒ‹‰Ê‚ğ GameScene ‚É‹L˜^I
 		gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
-		//í“¬I—¹‰æ–Ê‚ÖˆÚs
 		battlePhase_ = BATTLE_END;
 		return;
 	}
 
-	// ƒo[‚ª‚Ü‚¾“®‚¢‚Ä‚¢‚éÅ’†‚Ìˆ—
-	if (actionGauge_.IsMoving())
+	// ã‚¹ãƒ†ãƒƒãƒ—ã”ã¨ã«å‡¦ç†ã‚’å®Œå…¨åˆ†é›¢
+	switch (attackStep_)
 	{
-		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
-		{
-			// ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚çƒo[‚ª‚»‚Ìê‚É~‚Ü‚é
-			GaugeState state = actionGauge_.PressButton();
+	case AttackStep::MOVING_GAUGE:
+		ProcessAttackGaugeInput();
+		break;
 
-			float rate = ActionGauge::GetResultRate(state);
-
-			int power = player_->Attack(rate);
-
-			// “G‚Éƒ_ƒ[ƒW‚ğ—^‚¦‚é
-			enemy_->Damage(power);
-
-			// ƒ_ƒ[ƒW‚ğ—^‚¦‚ç‚ê‚½‚Æ‚«‚¾‚¯UŒ‚‰¹‚ğ–Â‚ç‚·
-			if (power > 0)
-			{
-				SoundManager::GetInstance().Play(SoundManager::SRC::ATTACK_SE,Sound::TIMES::FORCE_ONCE);
-			}
-			else
-			{
-				SoundManager::GetInstance().Play(SoundManager::SRC::MISS_SE, Sound::TIMES::FORCE_ONCE);
-			}
-		}
-		else
-		{
-			//ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢ƒtƒŒ[ƒ€‚¾‚¯Aƒo[‚ği‚ß‚é
-			float deltaTime = 1.0f / 60.0f;
-			actionGauge_.Update(deltaTime);
-		}
-	}
-	else
-	{
-		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
-		{
-			//“G‚ğ“|‚µ‚Ä‚¢‚½ê‡
-			if (enemy_->IsDead())
-			{
-				//UŒ‚Œ‚”jŒ‹‰Ê‚ğ GameScene ‚É‹L˜^I
-				gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
-
-				//Œˆ’è‰¹
-				SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
-
-				//í“¬I—¹‰æ–Ê‚ÖˆÚs
-				battlePhase_ = BATTLE_END;
-				return;
-			}
-
-			battleTurnCnt_++;
-
-			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
-
-			battlePhase_ = ENEMY_TURN;
-		}
+	case AttackStep::WAIT_FOR_MESSAGE:
+		ProcessAttackMessageWait();
+		break;
 	}
 }
 
 void BattlePhase::ProsesSelectTalk(void)
 {
-	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+	// ã‚¹ãƒ†ãƒƒãƒ—ã”ã¨ã«å‡¦ç†ã‚’åˆ†å²
+	switch (talkStep_)
 	{
-		// “G‚ÌHP‚ª–ƒ^ƒ“‚Ì‚¾‚¯Aà“¾iƒg[ƒNj‚ªi‚Ş
-		if (enemy_->GetHP() == enemy_->GetMaxHP())
-		{
-			talkSuccessCount_++;
+	case TalkStep::SELECT_TALK:
+		ProcessTalkExecution();
+		break;
 
-			// "ON_TALK" ‚ÌƒZƒŠƒtƒŠƒXƒg‚ğGameScene‚©‚çæ“¾
-			auto talkList = gameScene_.getMessage(enemy_->GetName(), "ON_TALK");
-
-			// 4‰ñ‚É’B‚µ‚½A‚Ü‚½‚ÍCSV‚ÌƒZƒŠƒt‚ğ‚·‚×‚Ä’‚èI‚¦‚½ê‡
-			if (talkSuccessCount_ >= 4 || (!talkList.empty() && talkSuccessCount_ >= static_cast<int>(talkList.size())))
-			{
-				currentMessage_ = "˜b‚ğ•·‚¢‚Ä‚­‚ê‚é‚æ‚¤‚¾";
-
-				//à“¾Š®—¹‚ÅíÑ‹L˜^ • í“¬I—¹
-				gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_TALK);
-				battlePhase_ = BATTLE_END;
-			}
-			else
-			{
-				// ‰ñ”‚É‰‚¶‚½s‚ğƒŠƒXƒg‚©‚çæ“¾i1‰ñ–Ú‚È‚ç0”Ô–ÚA2‰ñ–Ú‚È‚ç1”Ô–Úcj
-				int index = talkSuccessCount_ - 1;
-				if (!talkList.empty() && index < static_cast<int>(talkList.size()))
-				{
-					currentMessage_ = talkList[index];
-				}
-				else
-				{
-					// –œ‚ªˆêCSV‚Éƒf[ƒ^‚ª‘«‚è‚È‚¢ê‡‚ÌƒtƒH[ƒ‹ƒoƒbƒN
-					currentMessage_ = "‘Šè‚Í­‚µ˜b‚É¨‚ğŒX‚¯‚Ä‚¢‚éc";
-				}
-
-				battleTurnCnt_++;
-				actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
-				battlePhase_ = ENEMY_TURN;
-			}
-		}
-		else
-		{
-			//UŒ‚‚µ‚ÄHP‚ªŒ¸‚Á‚Ä‚¢‚éó‘Ô‚Åu‚Í‚È‚·v‚ğ‘I‚ñ‚¾ê‡
-			currentMessage_ = "‘Šè‚ÍŒx‰ú‚µ‚Ä˜b‚ğ•·‚¢‚Ä‚­‚ê‚È‚¢ccI";
-
-			battleTurnCnt_++;
-			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
-			battlePhase_ = ENEMY_TURN;
-		}
-
-		// Œˆ’è‰¹
-		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+	case TalkStep::WAIT_FOR_MESSAGE:
+		ProcessTalkMessageWait();
+		break;
 	}
 }
 
@@ -541,28 +454,141 @@ void BattlePhase::ProsesSelectRun(void)
 {
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		// ƒ^[ƒ“‚ªŒo‰ß‚·‚é‚²‚Æ‚É“¦‚°‚ç‚ê‚éŠm—¦‚ª•Ï‚í‚é
+		// ã‚¿ãƒ¼ãƒ³ãŒçµŒéã™ã‚‹ã”ã¨ã«é€ƒã’ã‚‰ã‚Œã‚‹ç¢ºç‡ãŒå¤‰ã‚ã‚‹
 		int runRate = RUN_SUCCESS_RATE + (battleTurnCnt_ * 5);
 
-		// “¦‘–¬Œ÷”»’èi¬Œ÷j
+		// é€ƒèµ°æˆåŠŸåˆ¤å®šï¼ˆæˆåŠŸæ™‚ï¼‰
 		if (runRate <= GetRand(99))
 		{
 			currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_ESCAPE");
 
-			//“¦‘–Œ‹‰Ê‚ğ GameScene ‚É‹L˜^I
+			//é€ƒèµ°çµæœã‚’ GameScene ã«è¨˜éŒ²ï¼
 			gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ESCAPE);
 
 			battlePhase_ = BATTLE_END;
 		}
-		// ¸”s
+		// å¤±æ•—æ™‚
 		else
 		{
 			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 			battlePhase_ = ENEMY_TURN;
 		}
 
-		// Œˆ’è‰¹
+		// æ±ºå®šéŸ³
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+	}
+}
+
+// ãƒãƒ¼ãŒå‹•ã„ã¦ã„ã‚‹é–“ã®å‡¦ç†
+void BattlePhase::ProcessAttackGaugeInput(void)
+{
+
+	if (actionGauge_.IsMoving())
+	{
+		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+		{
+			// æ±ºå®šãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã‚‰ãƒãƒ¼ã‚’æ­¢ã‚ã¦ãƒ€ãƒ¡ãƒ¼ã‚¸è¨ˆç®—
+			GaugeState state = actionGauge_.PressButton();
+			float rate = ActionGauge::GetResultRate(state);
+			int power = player_->Attack(rate);
+			enemy_->Damage(power);
+
+			if (power > 0)
+			{
+				SoundManager::GetInstance().Play(SoundManager::SRC::ATTACK_SE, Sound::TIMES::FORCE_ONCE);
+				DamageTalk(); // ãƒ€ãƒ¡ãƒ¼ã‚¸ã«å¿œã˜ãŸã‚»ãƒªãƒ•ã‚’ã‚»ãƒƒãƒˆ
+			}
+			else
+			{
+				SoundManager::GetInstance().Play(SoundManager::SRC::MISS_SE, Sound::TIMES::FORCE_ONCE);
+				currentMessage_ = "æ”»æ’ƒã¯ãƒŸã‚¹ã—ãŸï¼";
+			}
+
+			// æ¬¡ã®ã‚¹ãƒ†ãƒƒãƒ—ï¼ˆãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç¢ºèªå¾…ã¡ï¼‰ã¸ç§»è¡Œ
+			attackStep_ = AttackStep::WAIT_FOR_MESSAGE;
+		}
+		else
+		{
+			// ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ãªã„é–“ã¯ãƒãƒ¼ã‚’é€²ã‚ã‚‹
+			float deltaTime = 1.0f / 60.0f;
+			actionGauge_.Update(deltaTime);
+		}
+	}
+}
+
+//ãƒãƒ¼ãŒå‹•ã„ã¦ã„ã‚‹é–“ã®å‡¦ç†
+void BattlePhase::ProcessAttackMessageWait(void)
+{
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+	{
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+
+		// æ’ƒç ´ã—ã¦ã„ãŸå ´åˆã¯æˆ¦é—˜çµ‚äº†ã¸
+		if (enemy_->IsDead())
+		{
+			gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
+			battlePhase_ = BATTLE_END;
+			return;
+		}
+
+		// æ¬¡å›ã®ãŸã‚ã«ã‚¹ãƒ†ãƒƒãƒ—ã‚’æœ€åˆï¼ˆãƒãƒ¼ç§»å‹•ï¼‰ã«ãƒªã‚»ãƒƒãƒˆ
+		attackStep_ = AttackStep::MOVING_GAUGE;
+
+		// ã‚¿ãƒ¼ãƒ³ã‚’å›ã—ã¦æ•µã®ã‚¿ãƒ¼ãƒ³ã¸ç§»è¡Œ
+		battleTurnCnt_++;
+		actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+		battlePhase_ = ENEMY_TURN;
+	}
+}
+
+// è©±ã™ã‚³ãƒãƒ³ãƒ‰ã®å‡¦ç†
+void BattlePhase::ProcessTalkExecution(void)
+{
+	//æ•µã®HPãŒæº€ã‚¿ãƒ³ã®çŠ¶æ…‹ã§è©±ã™ã¨èª¬å¾—æˆåŠŸå›æ•°ãŒå¢—ãˆã‚‹
+	if (enemy_->GetHP() == enemy_->GetMaxHP())
+	{
+		talkSuccessCount_++;
+
+		// 4å›ã«é”ã—ãŸå ´åˆã¯èª¬å¾—æˆåŠŸï¼
+		if (talkSuccessCount_ >= 4)
+		{
+			currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_TALK", talkSuccessCount_ - 1);
+			gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_TALK);
+			battlePhase_ = BATTLE_END;
+			return;
+		}
+		else
+		{
+			// CSVã‹ã‚‰è©²å½“å›æ•°ã®ã‚»ãƒªãƒ•ã‚’å–å¾—ã—ã¦ç”»é¢ã«ã‚»ãƒƒãƒˆ
+			currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_TALK", talkSuccessCount_ - 1);
+		}
+	}
+	else
+	{
+		// æ”»æ’ƒã—ã¦HPãŒæ¸›ã£ã¦ã„ã‚‹çŠ¶æ…‹ã®ã¨ã
+		currentMessage_ = "ç›¸æ‰‹ã¯è­¦æˆ’ã—ã¦è©±ã‚’èã„ã¦ãã‚Œãªã„â€¦â€¦ï¼";
+	}
+
+	SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+
+	// æ¬¡ã®ã‚¹ãƒ†ãƒƒãƒ—ï¼ˆã‚»ãƒªãƒ•ç¢ºèªå¾…ã¡ï¼‰ã¸ç§»è¡Œ
+	talkStep_ = TalkStep::WAIT_FOR_MESSAGE;
+}
+
+// è©±ã™ã‚³ãƒãƒ³ãƒ‰ã®ã‚»ãƒªãƒ•ç¢ºèªå¾Œã®å‡¦ç†
+void BattlePhase::ProcessTalkMessageWait(void)
+{
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+	{
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+
+		// æ¬¡å›ã®ãŸã‚ã«ã‚¹ãƒ†ãƒƒãƒ—ã‚’æœ€åˆã«æˆ»ã™
+		talkStep_ = TalkStep::SELECT_TALK;
+
+		// ã‚¿ãƒ¼ãƒ³ã‚’é€²ã‚ã¦æ•µã®ã‚¿ãƒ¼ãƒ³ã¸ç§»è¡Œ
+		battleTurnCnt_++;
+		actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+		battlePhase_ = ENEMY_TURN;
 	}
 }
 
@@ -570,20 +596,14 @@ void BattlePhase::DamageTalk(void)
 {
 	damageCount_++;
 
-	// GameSceneŒo—R‚Å "ON_DAMAGE" ‚ÌƒZƒŠƒtƒŠƒXƒg‚ğ‚·‚×‚Äæ“¾
-	// i¦ GameScene‘¤‚É getMessageList ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚é‘O’ñj
-	auto dmgList = gameScene_.getMessage(enemy_->GetName(), "ON_DAMAGE");
-
-	// 1. ‰‚ß‚Äƒ_ƒ[ƒW‚ğó‚¯‚½‚Æ‚«i1‰ñ–Ú‚Ìƒ_ƒ[ƒWj
-	if (damageCount_ == 1 && !dmgList.empty())
+	if (damageCount_ == 1)
 	{
-		currentMessage_ = dmgList[0];
+		currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_DAMAGE", 0);
 	}
 
-	// 2. HP‚ª”¼•ªˆÈ‰º‚É‚È‚Á‚½uŠÔi‚©‚ÂA‚Ü‚¾Ä¶‚µ‚Ä‚¢‚È‚¢ê‡j
-	if (enemy_->GetHP() <= enemy_->GetMaxHP() / 2 && !isHalfHpTalkDone_ && dmgList.size() >= 2)
+	if (enemy_->GetHP() <= enemy_->GetMaxHP() / 2 && !isHalfHpTalkDone_)
 	{
-		currentMessage_ = dmgList[1];
-		isHalfHpTalkDone_ = true; // 2‰ñÄ¶‚³‚ê‚È‚¢‚æ‚¤‚ÉƒƒbƒN
+		currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_DAMAGE", 1);
+		isHalfHpTalkDone_ = true;
 	}
 }

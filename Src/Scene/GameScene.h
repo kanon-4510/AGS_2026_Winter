@@ -102,7 +102,7 @@ public:
 	bool IsStory() const;
 
 	// ğŒ‚É‡‚¤ƒZƒŠƒt‚ğƒ‰ƒ“ƒ_ƒ€‚Åæ“¾‚·‚éŠÖ”
-	std::string getMessage(const std::string& enemyName, const std::string& eventTag);
+	std::string getMessage(const std::string& enemyName, const std::string& eventTag, int index = -1);
 
 private:
 

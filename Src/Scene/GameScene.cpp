@@ -230,7 +230,8 @@ bool GameScene::IsStory() const
 }
 
 // 条件に合うセリフをランダムで取得する関数
-std::string GameScene::getMessage(const std::string& enemyName, const std::string& eventTag) {
+std::string GameScene::getMessage(const std::string& enemyName, const std::string& eventTag, int index) 
+{
 	std::vector<std::string> candidates;
 
 	for (const auto& d : dialogues) {
@@ -239,12 +240,23 @@ std::string GameScene::getMessage(const std::string& enemyName, const std::strin
 		}
 	}
 
-	//if (candidates.empty()) {
-	//	return "（未検出: " + enemyName + " / " + eventTag + "）";
-	//}
+	//クラッシュ防止のため、見つからない場合は必ず文字列を返して抜ける
+	if (candidates.empty()) {
+		return "（未検出: " + enemyName + " / " + eventTag + "）";
+	}
 
-	int index = GetRand(static_cast<int>(candidates.size()) - 1);
-	return candidates[index];
+	//番号が指定されている場合（0, 1, 2...）は、その順番のセリフを返す
+	if (index >= 0) {
+		if (index < static_cast<int>(candidates.size())) {
+			return candidates[index];
+		}
+		// 指定された番号がCSVの行数を超えていたら、最後の行を返す
+		return candidates.back();
+	}
+
+	//番号が指定されていない場合（-1）は、これまで通りランダムで返す
+	int randIndex = GetRand(static_cast<int>(candidates.size()) - 1);
+	return candidates[randIndex];
 }
 
 // 文字列中の "\\n" を実際の改行文字 "\n" に置換する処理

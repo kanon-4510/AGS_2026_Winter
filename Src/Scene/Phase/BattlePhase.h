@@ -29,6 +29,18 @@ public:
 		MAX				//最大値
 	};
 
+	//攻撃フェーズの中の細かいステップ
+	enum class AttackStep {
+		MOVING_GAUGE,     //バーを動かして止める段階
+		WAIT_FOR_MESSAGE  //止めた後のメッセージ確認（決定待ち）段階
+	};
+
+	//話すフェーズの中の細かいステップ
+	enum class TalkStep {
+		SELECT_TALK,     //はなすを実行してセリフをセットする段階
+		WAIT_FOR_MESSAGE //表示されたセリフを確認して、次へ進む段階
+	};
+
 	static constexpr int RUN_SUCCESS_RATE = 0;	//逃げれる確率(%)
 
 	static constexpr int MAX_COMMANDS = 3;		//コマンドの最大数
@@ -56,6 +68,9 @@ private:
 
 	BATTLE_PHASE battlePhase_;		//バトルフェーズの種類
 	COMMAND_TYPE commandType_;		//コマンドの種類
+
+	AttackStep attackStep_ = AttackStep::MOVING_GAUGE;	//攻撃フェーズの中の細かいステップ
+	TalkStep talkStep_ = TalkStep::SELECT_TALK;			//話すフェーズの中の細かいステップ
 
 	bool isBarActive_ = false;		//アクションゲージが動いているかどうか
 
@@ -96,6 +111,12 @@ private:
 	void ProsesSelectAttack(void);	//攻撃コマンドの処理
 	void ProsesSelectTalk(void);	//話すコマンドの処理
 	void ProsesSelectRun(void);		//逃げるコマンドの処理
+
+	void ProcessAttackGaugeInput(void); // バーの移動と停止・ダメージ処理
+	void ProcessAttackMessageWait(void); // メッセージ確認後のターン移行処理
+
+	void ProcessTalkExecution(void);  // セリフを決定して表示する
+	void ProcessTalkMessageWait(void); // セリフ確認後に敵のターンへ移行する
 
 	void DamageTalk(void);	//ダメージを受けたときのセリフ処理
 };

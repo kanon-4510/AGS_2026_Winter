@@ -392,6 +392,12 @@ void StoryPhase::UpdateEnding(void)
 				gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
 				return;
 			}
+			else if (tag == "BAD_END")
+			{
+				// エンディングの最後に到達したらクリアシーンへ移行
+				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::OVER);
+				return;
+			}
 
 			//次の行へ進める
 			currentLineIndex_++;
