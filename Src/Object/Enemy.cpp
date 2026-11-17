@@ -29,6 +29,7 @@ void Enemy::Init(TYPE type)
 	switch (type_)
 	{
 	case TYPE::FROG:
+		name_ = "カエル";
 		maxHp_ = 20;
 		atk_ = 10;
 		imageHandle_ = LoadGraph("Data/Enemy/Frog.png");
@@ -38,6 +39,7 @@ void Enemy::Init(TYPE type)
 		break;
 
 	case TYPE::GOBLIN:
+		name_ = "ゴブリン";
 		maxHp_ = 50;
 		atk_ = 15;
 		imageHandle_ = LoadGraph("Data/Enemy/Goblin.png");
@@ -47,6 +49,7 @@ void Enemy::Init(TYPE type)
 		break;
 
 	case TYPE::REAPER:
+		name_ = "死神";
 		maxHp_ = 45;
 		atk_ = 20;
 		imageHandle_ = LoadGraph("Data/Enemy/Reaper.png");
@@ -56,6 +59,7 @@ void Enemy::Init(TYPE type)
 		break;
 
 	case TYPE::SLIME:
+		name_ = "スライム";
 		maxHp_ = 100;
 		atk_ = 10;
 		imageHandle_ = LoadGraph("Data/Enemy/Slime.png");
@@ -65,6 +69,7 @@ void Enemy::Init(TYPE type)
 		break;
 
 	case TYPE::DARKKNIGHT:
+		name_ = "ダークナイト";
 		maxHp_ = 60;
 		atk_ = 25;
 		imageHandle_ = LoadGraph("Data/Enemy/Darkknight.png");
@@ -74,6 +79,7 @@ void Enemy::Init(TYPE type)
 		break;
 
 	case TYPE::BAT:
+		name_ = "コウモリ";
 		maxHp_ = 100;
 		atk_ = 25;
 		imageHandle_ = LoadGraph("Data/Enemy/Bat.png");
@@ -83,6 +89,7 @@ void Enemy::Init(TYPE type)
 		break;
 
 	case TYPE::DRAGON:
+		name_ = "ドラゴン";
 		maxHp_ = 80;
 		atk_ = 15;
 		imageHandle_ = LoadGraph("Data/Enemy/Dragon.png");
@@ -92,6 +99,7 @@ void Enemy::Init(TYPE type)
 		break;
 
 	case TYPE::DEVIL:
+		name_ = "魔王";
 		maxHp_ = 200;
 		atk_ = 30;
 		imageHandle_ = LoadGraph("Data/Enemy/Devil.png");
@@ -101,6 +109,7 @@ void Enemy::Init(TYPE type)
 		break;
 
 	case TYPE::PIKO:
+		name_ = "ピコ";
 		maxHp_ = 999;
 		atk_ = 99;
 		gaugeGoodWidth_ = 0.50f;
@@ -321,6 +330,11 @@ float Enemy::GetGaugeGreatWidth() const
 float Enemy::GetGaugePerfectWidth() const
 {
 	return gaugePerfectWidth_;
+}
+
+std::string Enemy::GetName() const
+{
+	return name_;
 }
 
 int Enemy::GetHP() const

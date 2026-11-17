@@ -1,6 +1,6 @@
 ﻿#include <DxLib.h>
 #include <fstream>
-#include "../../Utility/ASOUtility.h"
+#include "../../Utility/AsoUtility.h"
 #include "../../Manager/InputManager.h"
 #include "../../Manager/SceneManager.h"
 #include "../../Manager/SoundManager.h"

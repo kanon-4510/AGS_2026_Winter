@@ -7,6 +7,12 @@
 class StoryPhase;
 class BattlePhase;
 
+struct DialogueData {
+	std::string enemyName; //名前
+	std::string message;   //メッセージ
+	std::string eventTag;  //イベントタグ
+};
+
 class GameScene : public SceneBase
 {
 public:
@@ -18,7 +24,7 @@ public:
 		MAX				//最大値
 	};
 
-	// エンディングの種類
+	//エンディングの種類
 	enum ENDING_TYPE
 	{
 		ENDING_NORMAL,
@@ -26,7 +32,7 @@ public:
 		ENDING_TRUE
 	};
 
-	// 戦闘結果の定数
+	//戦闘結果の定数
 	enum BATTLE_RESULT
 	{
 		RESULT_ATTACK, // 撃破
@@ -63,17 +69,18 @@ public:
 	~GameScene(void);		//デストラクタ
 
 	void Init(void) override;		//初期化処理
+	void CSVInit(bool& retFlag);
 	void Update(void) override;		//更新処理
 	void Draw(void) override;		//描画処理
 	void Release(void) override;	//解放処理
 
 	void ChangePhase(QUEST_PHASE phase);	//フェーズの変更
 
-	void StartNextBattle();
+	void StartNextBattle(void);
 	void RecordBattleResult(BATTLE_RESULT result);	//戦闘結果の記録
 
 	
-	ENDING_TYPE JudgeEndingType() const;	//エンディング判定
+	ENDING_TYPE JudgeEndingType(void) const;	//エンディング判定
 
 	//ゲッター・セッター
 	int GetWaveCount(void) const;	//wavecount取得
@@ -94,12 +101,21 @@ public:
 	// ストーリーモードかどうかを取得
 	bool IsStory() const;
 
+	// 条件に合うセリフをランダムで取得する関数
+	std::string getMessage(const std::string& enemyName, const std::string& eventTag);
+
 private:
 
 	InputManager& ins_ = InputManager::GetInstance();
 	std::unique_ptr<PhaseBase> phase_;
 	std::unique_ptr<StoryPhase> storyPhase_;
 	std::unique_ptr<BattlePhase> battlePhase_;
+
+	std::vector<DialogueData> dialogues; // セリフデータを直接保持
+	std::string currentMessage;          // 現在表示中のセリフ
+	
+	// 文字列中の "\n" を実際の改行文字に置換するヘルパー関数
+	std::string unescapeNewlines(const std::string& str);
 
 	QUEST_PHASE questPhase_;	//クエストのフェーズ
 
@@ -118,4 +134,7 @@ private:
 	int playerImg_; //プレイヤーの画像ハンドル
 	int stageImg_;  //ステージの画像ハンドル
 	int messageBoxImg_; //メッセージボックスの画像ハンドル
+
+	//デバッグ表示用関数
+	void DrawDebug(void);
 };

@@ -1,4 +1,7 @@
 #include <DxLib.h>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
 #include "../Application.h"
 #include "../Common/Color.h"
 #include "../Manager/SceneManager.h"
@@ -45,13 +48,15 @@ void GameScene::Init(void)
 	talkCount_ = 0;
 	escapeCount_ = 0;
 
+	//
+	bool retFlag;
+	CSVInit(retFlag);
+	if (retFlag) return;
+
 	for (int i = 0; i < 5; ++i)
 	{
 		usedEnemies_[i] = false;
 	}
-	playerImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::PLAYER).handleId_;
-	stageImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::GAME_SCENE).handleId_;
-	messageBoxImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::MESSAGE_BOX).handleId_;
 
 	if (SceneManager::GetInstance().IsStoryMode())
 	{
@@ -61,6 +66,47 @@ void GameScene::Init(void)
 	{
 		ChangePhase(QUEST_PHASE::PHASE_BATTLE);
 	}
+}
+
+void GameScene::CSVInit(bool& retFlag)
+{
+	retFlag = true;
+	//Enemy.csvファイルを読み込む
+	std::ifstream file("Data/CSV/Enemy.CSV");
+	if (!file.is_open()) {
+		return;
+	}
+
+	std::string line;
+	// 1行目のヘッダー（名前,メッセージ,イベントタグ）をスキップ
+	std::getline(file, line);
+
+	while (std::getline(file, line)) {
+		if (line.empty()) continue;
+
+		std::stringstream ss(line);
+		std::string name, msg, tag;
+
+		if (std::getline(ss, name, ',') &&
+			std::getline(ss, msg, ',') &&
+			std::getline(ss, tag, ',')) {
+
+			// ダブルクォーテーションの除去
+			if (!msg.empty() && msg.front() == '"' && msg.back() == '"') {
+				msg = msg.substr(1, msg.size() - 2);
+			}
+
+			// \n を実際の改行に変換
+			msg = unescapeNewlines(msg);
+
+			dialogues.push_back({ name, msg, tag });
+		}
+	}
+	file.close();
+
+	// 例：戦闘開始時のセリフを早速取得してみる
+	//currentMessage = getMessage("カエル", "START_BATTLE");
+	retFlag = false;
 }
 
 //更新処理
@@ -73,9 +119,9 @@ void GameScene::Update(void)
 void GameScene::Draw(void)
 {
 	phase_->Draw();
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "Battle Count: %d", battleCount_);
-	DrawFormatString(0, 20, GetColor(255, 255, 255), "Talk Count: %d", talkCount_);
-	DrawFormatString(0, 40, GetColor(255, 255, 255), "Escape Count: %d", escapeCount_);
+	
+	//デバッグ情報の描画
+	DrawDebug();
 }
 
 //解放処理
@@ -99,7 +145,7 @@ void GameScene::ChangePhase(QUEST_PHASE phase)
 		break;
 	}
 
-	// 追加: フェーズ初期化（生成直後に必ず Init を呼ぶ）
+	//フェーズ初期化（生成直後に必ず Init を呼ぶ）
 	if (phase_)
 	{
 		phase_->Init();
@@ -141,7 +187,7 @@ void GameScene::RecordBattleResult(BATTLE_RESULT result)
 	}
 }
 
-GameScene::ENDING_TYPE GameScene::JudgeEndingType() const
+GameScene::ENDING_TYPE GameScene::JudgeEndingType(void) const
 {
 	//逃走が3回以上なら逃走エンド
 	if (escapeCount_ >= 3)
@@ -181,4 +227,41 @@ void GameScene::SetEnemyUsed(int index)
 bool GameScene::IsStory() const
 {
 	return SceneManager::GetInstance().IsStoryMode();
+}
+
+// 条件に合うセリフをランダムで取得する関数
+std::string GameScene::getMessage(const std::string& enemyName, const std::string& eventTag) {
+	std::vector<std::string> candidates;
+
+	for (const auto& d : dialogues) {
+		if (d.enemyName == enemyName && d.eventTag == eventTag) {
+			candidates.push_back(d.message);
+		}
+	}
+
+	//if (candidates.empty()) {
+	//	return "（未検出: " + enemyName + " / " + eventTag + "）";
+	//}
+
+	int index = GetRand(static_cast<int>(candidates.size()) - 1);
+	return candidates[index];
+}
+
+// 文字列中の "\\n" を実際の改行文字 "\n" に置換する処理
+std::string GameScene::unescapeNewlines(const std::string& str)
+{
+	std::string result = str;
+	size_t pos = 0;
+	while ((pos = result.find("\\n", pos)) != std::string::npos) {
+		result.replace(pos, 2, "\n");
+		pos += 1;
+	}
+	return result;
+}
+
+void GameScene::DrawDebug(void)
+{
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "Battle Count: %d", battleCount_);
+	DrawFormatString(0, 20, GetColor(255, 255, 255), "Talk Count: %d", talkCount_);
+	DrawFormatString(0, 40, GetColor(255, 255, 255), "Escape Count: %d", escapeCount_);
 }

@@ -69,6 +69,9 @@ public:
 	float GetGaugeGreatWidth() const;
 	float GetGaugePerfectWidth() const;
 
+	// –¼‘Oæ“¾
+	std::string GetName() const;
+
 	// HPæ“¾
 	int GetHP() const;
 
@@ -93,6 +96,9 @@ private:
 	float gaugeGoodWidth_;
 	float gaugeGreatWidth_;
 	float gaugePerfectWidth_;
+
+	//–¼‘O
+	std::string name_;
 
 	// Œ»İHP
 	int hp_;

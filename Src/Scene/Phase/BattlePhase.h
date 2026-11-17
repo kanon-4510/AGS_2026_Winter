@@ -64,6 +64,9 @@ private:
 	int battleTurnCnt_;				//バトルのターン数をカウント
 	int talkSuccessCount_ = 0;		//現在の説得成功回数
 
+	int damageCount_ = 0;          // ダメージを受けた回数
+	bool isHalfHpTalkDone_ = false; // HP半分時のセリフを再生済みか
+
 	float damageFlashTimer_ = 0.0f;	//被ダメージ時の画面フラッシュ
 
 	const float DAMAGE_FLASH_DURATION = 0.15f;
@@ -86,9 +89,13 @@ private:
 	void DrawCommandSelect(void);	//コマンド選択の描画処理
 	void DrawPlayerTurn(void);		//プレイヤーのターンの描画処理
 	void DrawEnemyTurn(void);		//敵のターンの描画処理
-
+	
+	// 改行描画用のヘルパー関数
+	void DrawMultilineText(int x, int y, const std::string& text, unsigned int color, int lineHeight);
+	
 	void ProsesSelectAttack(void);	//攻撃コマンドの処理
 	void ProsesSelectTalk(void);	//話すコマンドの処理
 	void ProsesSelectRun(void);		//逃げるコマンドの処理
 
+	void DamageTalk(void);	//ダメージを受けたときのセリフ処理
 };

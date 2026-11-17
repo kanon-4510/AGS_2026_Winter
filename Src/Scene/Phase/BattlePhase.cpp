@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include <string>
+#include <sstream>
 #include "../../Manager/InputManager.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SoundManager.h"
@@ -36,6 +37,10 @@ void BattlePhase::Init(void)
 
 	enemy_ = std::make_unique<Enemy>();
 	SpawnEnemy();
+
+	if (enemy_) {
+		currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "START_BATTLE");
+	}
 
 	//音楽
 	SoundManager::GetInstance().Play(SoundManager::SRC::GAME_BGM, Sound::TIMES::LOOP);
@@ -89,10 +94,13 @@ void BattlePhase::Draw(void)
 	DrawString(100, 100, "Battle Phase", GetColor(255, 0, 0));
 	DrawFormatString(700,120,0xFFFFFF,"Enemy HP: %d",enemy_->GetHP());
 	DrawFormatString(0,120,0xFFFFFF,"Wave Count: %d",gameScene_.GetWaveCount());
-	DrawFormatString(0, 150, 0xFFFFFF, "Talk Success Count: %s", currentMessage_.c_str());
+	//DrawFormatString(0, 150, 0xFFFFFF, "Talk Success Count: %s", currentMessage_.c_str());
 
 	// メッセージ枠およびアクションゲージの描画領域指定（例: 画面下部）
 	int winX = 100, winY = 360, winW = 600, winH = 180;
+
+	//DrawMultilineText(275, 700, currentMessage_, GetColor(255, 255, 255), 24);
+	DrawString(275, 700, currentMessage_.c_str(), GetColor(255, 255, 255));
 
 	//アクションゲージ枠（常時表示）
 	actionGauge_.Draw();
@@ -376,6 +384,19 @@ void BattlePhase::DrawEnemyTurn(void)
 	DrawString(100, 130, "敵のターン", 0xFFFFFF);
 }
 
+void BattlePhase::DrawMultilineText(int x, int y, const std::string& text, unsigned int color, int lineHeight)
+{
+	std::stringstream ss(text);
+	std::string line;
+	int currentY = y;
+
+	while (std::getline(ss, line, '\n'))
+	{
+		DrawString(x, currentY, line.c_str(), color);
+		currentY += lineHeight;
+	}
+}
+
 void BattlePhase::ProsesSelectAttack(void)
 {
 	if (enemy_->IsDead())
@@ -450,25 +471,48 @@ void BattlePhase::ProsesSelectTalk(void)
 {
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
+		// 敵のHPが満タンの時だけ、説得（トーク）が進む
 		if (enemy_->GetHP() == enemy_->GetMaxHP())
 		{
 			talkSuccessCount_++;
-		}
 
-		if (talkSuccessCount_ >= 4)
-		{
-			currentMessage_ = "相手は戦意を喪失した！";
+			// "ON_TALK" のセリフリストをGameSceneから取得
+			auto talkList = gameScene_.getMessage(enemy_->GetName(), "ON_TALK");
 
-			//説得完了で戦績記録 ＆ 戦闘終了
-			gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_TALK);
-			battlePhase_ = BATTLE_END;
+			// 4回に達した、またはCSVのセリフをすべて喋り終えた場合
+			if (talkSuccessCount_ >= 4 || (!talkList.empty() && talkSuccessCount_ >= static_cast<int>(talkList.size())))
+			{
+				currentMessage_ = "話を聞いてくれるようだ";
+
+				//説得完了で戦績記録 ＆ 戦闘終了
+				gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_TALK);
+				battlePhase_ = BATTLE_END;
+			}
+			else
+			{
+				// 回数に応じた行をリストから取得（1回目なら0番目、2回目なら1番目…）
+				int index = talkSuccessCount_ - 1;
+				if (!talkList.empty() && index < static_cast<int>(talkList.size()))
+				{
+					currentMessage_ = talkList[index];
+				}
+				else
+				{
+					// 万が一CSVにデータが足りない場合のフォールバック
+					currentMessage_ = "相手は少し話に耳を傾けている…";
+				}
+
+				battleTurnCnt_++;
+				actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+				battlePhase_ = ENEMY_TURN;
+			}
 		}
 		else
 		{
-			currentMessage_ = "相手は少し話に耳を傾けている…";
+			//攻撃してHPが減っている状態で「はなす」を選んだ場合
+			currentMessage_ = "相手は警戒して話を聞いてくれない……！";
 
 			battleTurnCnt_++;
-			//battlePhase_ = COMMAND_SELECT;
 			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
 			battlePhase_ = ENEMY_TURN;
 		}
@@ -488,6 +532,8 @@ void BattlePhase::ProsesSelectRun(void)
 		// 逃走成功判定（成功時）
 		if (runRate <= GetRand(99))
 		{
+			currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_ESCAPE");
+
 			//逃走結果を GameScene に記録！
 			gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ESCAPE);
 
@@ -502,5 +548,27 @@ void BattlePhase::ProsesSelectRun(void)
 
 		// 決定音
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+	}
+}
+
+void BattlePhase::DamageTalk(void)
+{
+	damageCount_++;
+
+	// GameScene経由で "ON_DAMAGE" のセリフリストをすべて取得
+	// （※ GameScene側に getMessageList が用意されている前提）
+	auto dmgList = gameScene_.getMessage(enemy_->GetName(), "ON_DAMAGE");
+
+	// 1. 初めてダメージを受けたとき（1回目のダメージ）
+	if (damageCount_ == 1 && !dmgList.empty())
+	{
+		currentMessage_ = dmgList[0];
+	}
+
+	// 2. HPが半分以下になった瞬間（かつ、まだ再生していない場合）
+	if (enemy_->GetHP() <= enemy_->GetMaxHP() / 2 && !isHalfHpTalkDone_ && dmgList.size() >= 2)
+	{
+		currentMessage_ = dmgList[1];
+		isHalfHpTalkDone_ = true; // 2回再生されないようにロック
 	}
 }
