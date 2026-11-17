@@ -306,21 +306,37 @@ void BattlePhase::UpdateEnemyTurn(void)
 			// ダメージを受けた後のHP
 			int afterHP = player_->GetHP();
 
-			// 実際にHPが減っていたら赤くする
 			int damage = beforeHP - afterHP;
 
 			if (damage > 0)
 			{
-				// ダメージを受けた場合
 				damageFlashTimer_ = DAMAGE_FLASH_DURATION;
 
-				SoundManager::GetInstance().Play(SoundManager::SRC::CRITICALATTACK_SE, Sound::TIMES::FORCE_ONCE);
+				SoundManager::GetInstance().Play(SoundManager::SRC::CRITICALATTACK_SE,Sound::TIMES::FORCE_ONCE);
 			}
 			else
 			{
-				// 防御成功音
-				SoundManager::GetInstance().Play(SoundManager::SRC::PARRY_SE, Sound::TIMES::FORCE_ONCE);
+				SoundManager::GetInstance().Play(SoundManager::SRC::PARRY_SE,Sound::TIMES::FORCE_ONCE);
 			}
+		}
+		// バーが最後まで動いてもEnterを押さなかった場合
+		else if (!actionGauge_.IsMoving())
+		{
+			// 防御失敗として扱う
+			player_->Defense(0.0f);
+
+			int beforeHP = player_->GetHP();
+
+			player_->Damage(enemy_->GetATK());
+
+			int afterHP = player_->GetHP();
+
+			if (beforeHP > afterHP)
+			{
+				damageFlashTimer_ = DAMAGE_FLASH_DURATION;
+			}
+
+			SoundManager::GetInstance().Play(SoundManager::SRC::CRITICALATTACK_SE,Sound::TIMES::FORCE_ONCE);
 		}
 	}
 	// バーが止まった後
@@ -330,12 +346,11 @@ void BattlePhase::UpdateEnemyTurn(void)
 		{
 			battleTurnCnt_++;
 
-			actionGauge_.Reset();;
+			actionGauge_.Reset();
 
 			battlePhase_ = COMMAND_SELECT;
 
-			// 決定音
-			SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+			SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE,Sound::TIMES::FORCE_ONCE);
 		}
 	}
 }
