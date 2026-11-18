@@ -3,6 +3,7 @@
 #include "../../Manager/InputManager.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SoundManager.h"
+#include "../../Manager/SceneManager.h"
 #include "../GameScene.h"
 #include "../../Object/Player.h"
 #include "../../Object/Enemy.h"
@@ -143,6 +144,7 @@ void BattlePhase::Draw(void)
 
 void BattlePhase::Release(void)
 {
+	SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
 }
 
 void BattlePhase::SpawnEnemy()
@@ -152,60 +154,87 @@ void BattlePhase::SpawnEnemy()
 	// GameSceneから現在の戦闘回数を取得
 	int wave = gameScene_.GetWaveCount();
 
-	// カエル
-	if (wave == 1)
+	if (gameScene_.IsStory())
 	{
-		type = Enemy::TYPE::FROG;
-		gameScene_.SetEnemyUsed(0);
-	}
-	// ボス
-
-	else if (wave == 5)
-	{
-		type = Enemy::TYPE::DEVIL;
-	}
-	else if (wave == 6)
-	{
-		type = Enemy::TYPE::PIKO;
-	}
-	// 2～4戦目は重複なしでランダム
-	else
-	{
-		int index;
-
-		do
+		// カエル
+		if (wave == 1)
 		{
-			index = GetRand(5) + 1;
-		} while (gameScene_.IsEnemyUsed(index));
-
-		gameScene_.SetEnemyUsed(index);
-
-		switch (index)
+			type = Enemy::TYPE::FROG;
+		}
+		else if (wave == 2)
 		{
-		case 1:
-			type = Enemy::TYPE::GOBLIN;
-			break;
-		case 2:
 			type = Enemy::TYPE::REAPER;
-			break;
-		case 3:
+		}
+		else if (wave == 3)
+		{
 			type = Enemy::TYPE::SLIME;
-			break;
-		case 4:
+		}
+		else if (wave == 4)
+		{
 			type = Enemy::TYPE::DARKKNIGHT;
-			break;
-		case 5:
-			type = Enemy::TYPE::BAT;
-			break;
-		case 6:
-			type = Enemy::TYPE::DRAGON;
-			break;
-		default:
-			type = Enemy::TYPE::GOBLIN;
-			break;
+		}
+		else if (wave == 5)
+		{
+			type = Enemy::TYPE::DEVIL;
+		}
+		else if (wave == 6)
+		{
+			type = Enemy::TYPE::PIKO;
 		}
 	}
-	
+	else
+	{
+		// カエル
+		if (wave == 1)
+		{
+			type = Enemy::TYPE::FROG;
+			gameScene_.SetEnemyUsed(0);
+		}
+		// ボス
+
+		else if (wave == 5)
+		{
+			type = Enemy::TYPE::DEVIL;
+		}
+
+		// 2～4戦目は重複なしでランダム
+		else
+		{
+			int index;
+
+			do
+			{
+				index = GetRand(5) + 1;
+			} while (gameScene_.IsEnemyUsed(index));
+
+			gameScene_.SetEnemyUsed(index);
+
+			switch (index)
+			{
+			case 1:
+				type = Enemy::TYPE::GOBLIN;
+				break;
+			case 2:
+				type = Enemy::TYPE::REAPER;
+				break;
+			case 3:
+				type = Enemy::TYPE::SLIME;
+				break;
+			case 4:
+				type = Enemy::TYPE::DARKKNIGHT;
+				break;
+			case 5:
+				type = Enemy::TYPE::BAT;
+				break;
+			case 6:
+				type = Enemy::TYPE::DRAGON;
+				break;
+			default:
+				type = Enemy::TYPE::GOBLIN;
+				break;
+			}
+		}
+	}
 
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Init(type);
@@ -355,17 +384,26 @@ void BattlePhase::UpdateBattleEnd(void)
 		if (gameScene_.IsStory())
 		{
 			gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_STORY);
-			SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
-			
+
 			// 決定音
 			SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 		}
 		else
 		{
-			gameScene_.NextWave();
-			gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
+			// Wave 5をクリアしたらゲームクリア
+			if (gameScene_.GetWaveCount() >= 5)
+			{
+				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::CLEAR);
+			}
+			else
+			{
+				gameScene_.NextWave();
+
+				gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
+			}
+
+			SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE,Sound::TIMES::FORCE_ONCE);
 		}
-		
 	}
 }
 
@@ -399,6 +437,8 @@ void BattlePhase::ProsesSelectAttack(void)
 		gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
 		//戦闘終了画面へ移行
 		battlePhase_ = BATTLE_END;
+
+		SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
 		return;
 	}
 
@@ -449,6 +489,7 @@ void BattlePhase::ProsesSelectAttack(void)
 
 				//戦闘終了画面へ移行
 				battlePhase_ = BATTLE_END;
+
 				return;
 			}
 
