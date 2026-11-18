@@ -29,7 +29,7 @@ public:
 
 	// “G‚Ì•\¦İ’è
 	static constexpr int ENEMY_MAX_SIZE = 200;
-	static constexpr int ENEMY_CENTER_X = 640;
+	static constexpr int ENEMY_CENTER_X = 610;
 	static constexpr int ENEMY_CENTER_Y = 220;
 
 	// “Gî•ñ‚Ì•\¦ˆÊ’u

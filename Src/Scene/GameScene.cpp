@@ -127,7 +127,6 @@ void GameScene::Draw(void)
 //‰ð•úˆ—
 void GameScene::Release(void)
 {
-	SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
 	phase_->Release();
 }
 
