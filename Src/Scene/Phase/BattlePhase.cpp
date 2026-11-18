@@ -512,6 +512,19 @@ void BattlePhase::ProcessAttackGaugeInput(void)
 			// ボタンが押されていない間はバーを進める
 			float deltaTime = 1.0f / 60.0f;
 			actionGauge_.Update(deltaTime);
+			
+			//Updateした結果、もしバーが端まで到達して自動で停止していた場合！
+			if (!actionGauge_.IsMoving())
+			{
+				// 自動的に「ミス（未操作）」としてダメージ0の処理を行う
+				int power = 0;
+				enemy_->Damage(power);
+
+				SoundManager::GetInstance().Play(SoundManager::SRC::MISS_SE, Sound::TIMES::FORCE_ONCE);
+
+				// 自動的に次のステップ（メッセージ確認待ち）へ進む！
+				attackStep_ = AttackStep::WAIT_FOR_MESSAGE;
+			}
 		}
 	}
 }
