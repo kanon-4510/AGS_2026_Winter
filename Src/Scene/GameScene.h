@@ -94,6 +94,10 @@ public:
 	// ストーリーモードかどうかを取得
 	bool IsStory() const;
 
+	// 条件に合うセリフをランダムで取得する関数
+	std::string getMessage(const std::string& enemyName, const std::string& eventTag, int index = -1);
+
+
 private:
 
 	InputManager& ins_ = InputManager::GetInstance();
