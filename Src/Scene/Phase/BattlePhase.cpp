@@ -159,67 +159,65 @@ void BattlePhase::SpawnEnemy()
 {
 	Enemy::TYPE type;
 
-	// 現在のwave数を取得
+	// 現在のWave数
 	int wave = gameScene_.GetWaveCount();
-	// カエル
-	if (wave == 1)
-	{
-		type = Enemy::TYPE::FROG;
-		gameScene_.SetEnemyUsed(0);
-	}
-	// ボス
 
-	else if (wave == 5)
+	// ストーリーモード
+	if (gameScene_.IsStory())
 	{
-		// ボス
-		if (wave == 1)
+		switch (wave)
 		{
+		case 1:
 			type = Enemy::TYPE::FROG;
-		}
-		else if (wave == 2)
-		{
+			break;
+
+		case 2:
 			type = Enemy::TYPE::REAPER;
-		}
-		else if (wave == 3)
-		{
+			break;
+
+		case 3:
 			type = Enemy::TYPE::SLIME;
-		}
-		else if (wave == 4)
-		{
+			break;
+
+		case 4:
 			type = Enemy::TYPE::DARKKNIGHT;
-		}
-		else if (wave == 5)
-		{
+			break;
+
+		case 5:
 			type = Enemy::TYPE::DEVIL;
-		}
-		else if (wave == 6)
-		{
+			break;
+
+		case 6:
 			type = Enemy::TYPE::PIKO;
+			break;
+
+		default:
+			type = Enemy::TYPE::FROG;
+			break;
 		}
 	}
+	// バトルモード
 	else
 	{
-		// ボス
+		// Wave 1：カエル
 		if (wave == 1)
 		{
 			type = Enemy::TYPE::FROG;
 			gameScene_.SetEnemyUsed(0);
 		}
-		// 通常敵
-
+		// Wave 5：ボス
 		else if (wave == 5)
 		{
 			type = Enemy::TYPE::DEVIL;
 		}
-
-		// 2〜4waveの通常敵
+		// Wave 2～4：重複なしでランダム
 		else
 		{
 			int index;
 
 			do
 			{
-				index = GetRand(5) + 1;
+				index = GetRand(4) + 1;
 			} while (gameScene_.IsEnemyUsed(index));
 
 			gameScene_.SetEnemyUsed(index);
@@ -229,21 +227,19 @@ void BattlePhase::SpawnEnemy()
 			case 1:
 				type = Enemy::TYPE::GOBLIN;
 				break;
+
 			case 2:
 				type = Enemy::TYPE::REAPER;
 				break;
+
 			case 3:
 				type = Enemy::TYPE::SLIME;
 				break;
+
 			case 4:
 				type = Enemy::TYPE::DARKKNIGHT;
 				break;
-			case 5:
-				type = Enemy::TYPE::BAT;
-				break;
-			case 6:
-				type = Enemy::TYPE::DRAGON;
-				break;
+
 			default:
 				type = Enemy::TYPE::GOBLIN;
 				break;
