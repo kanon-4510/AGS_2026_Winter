@@ -38,7 +38,11 @@ void BattlePhase::Init(void)
 	enemy_ = std::make_unique<Enemy>();
 	SpawnEnemy();
 
-	//音楽
+	if (enemy_) {
+		currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "START_BATTLE");
+	}
+
+	//???y
 	SoundManager::GetInstance().Play(SoundManager::SRC::GAME_BGM, Sound::TIMES::LOOP);
 
 	cursorImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::CURSOR).handleId_;
@@ -94,6 +98,9 @@ void BattlePhase::Draw(void)
 
 	// メッセージ枠およびアクションゲージの描画領域指定（例: 画面下部）
 	int winX = 100, winY = 360, winW = 600, winH = 180;
+
+	//DrawMultilineText(275, 700, currentMessage_, GetColor(255, 255, 255), 24);
+	DrawString(275, 700, currentMessage_.c_str(), GetColor(255, 255, 255));
 
 	//アクションゲージ枠（常時表示）
 	actionGauge_.Draw();
@@ -153,8 +160,15 @@ void BattlePhase::SpawnEnemy()
 
 	// GameSceneから現在の戦闘回数を取得
 	int wave = gameScene_.GetWaveCount();
+	// カエル
+	if (wave == 1)
+	{
+		type = Enemy::TYPE::FROG;
+		gameScene_.SetEnemyUsed(0);
+	}
+	// ボス
 
-	if (gameScene_.IsStory())
+	else if (wave == 5)
 	{
 		// カエル
 		if (wave == 1)
@@ -442,7 +456,119 @@ void BattlePhase::ProsesSelectAttack(void)
 		return;
 	}
 
-	// バーがまだ動いている最中の処理
+	// ステップごとに処理を完全分離
+	switch (attackStep_)
+	{
+	case AttackStep::MOVING_GAUGE:
+		ProcessAttackGaugeInput();
+		break;
+
+<<<<<<< HEAD
+	case AttackStep::WAIT_FOR_MESSAGE:
+		ProcessAttackMessageWait();
+		break;
+=======
+			float rate = ActionGauge::GetResultRate(state);
+
+			int power = player_->Attack(rate);
+
+			// ?G??_???[?W??^????
+			enemy_->Damage(power);
+
+			// ?_???[?W??^?????????????U????????
+			if (power > 0)
+			{
+				SoundManager::GetInstance().Play(SoundManager::SRC::ATTACK_SE,Sound::TIMES::FORCE_ONCE);
+			}
+			else
+			{
+				SoundManager::GetInstance().Play(SoundManager::SRC::MISS_SE, Sound::TIMES::FORCE_ONCE);
+			}
+		}
+		else
+		{
+			//?{?^????????????????t???[???????A?o?[??i???
+			float deltaTime = 1.0f / 60.0f;
+			actionGauge_.Update(deltaTime);
+		}
+	}
+	else
+	{
+		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+		{
+			//?G??|?????????
+			if (enemy_->IsDead())
+			{
+				//?U?????j????? GameScene ??L?^?I
+				gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
+
+				//????
+				SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+
+				//???I???????s
+				battlePhase_ = BATTLE_END;
+
+				return;
+			}
+
+			battleTurnCnt_++;
+
+			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+
+			battlePhase_ = ENEMY_TURN;
+		}
+>>>>>>> Scene
+	}
+}
+
+void BattlePhase::ProsesSelectTalk(void)
+{
+	// ステップごとに処理を分岐
+	switch (talkStep_)
+	{
+	case TalkStep::SELECT_TALK:
+		ProcessTalkExecution();
+		break;
+
+	case TalkStep::WAIT_FOR_MESSAGE:
+		ProcessTalkMessageWait();
+		break;
+	}
+}
+
+void BattlePhase::ProsesSelectRun(void)
+{
+	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+	{
+		// ターンが経過するごとに逃げられる確率が変わる
+		int runRate = RUN_SUCCESS_RATE + (battleTurnCnt_ * 5);
+
+		// 逃走成功判定（成功時）
+		if (runRate <= GetRand(99))
+		{
+			currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_ESCAPE");
+
+			//逃走結果を GameScene に記録！
+			gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ESCAPE);
+
+			battlePhase_ = BATTLE_END;
+		}
+		// 失敗時
+		else
+		{
+			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+			battlePhase_ = ENEMY_TURN;
+		}
+
+		// 決定音
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+	}
+}
+
+// バーが動いている間の処理
+void BattlePhase::ProcessAttackGaugeInput(void)
+{
+
 	if (actionGauge_.IsMoving())
 	{
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
@@ -460,16 +586,21 @@ void BattlePhase::ProsesSelectAttack(void)
 			// ダメージを与えられたときだけ攻撃音を鳴らす
 			if (power > 0)
 			{
-				SoundManager::GetInstance().Play(SoundManager::SRC::ATTACK_SE,Sound::TIMES::FORCE_ONCE);
+				SoundManager::GetInstance().Play(SoundManager::SRC::ATTACK_SE, Sound::TIMES::FORCE_ONCE);
+				DamageTalk(); // ダメージに応じたセリフをセット
 			}
 			else
 			{
 				SoundManager::GetInstance().Play(SoundManager::SRC::MISS_SE, Sound::TIMES::FORCE_ONCE);
+				currentMessage_ = "攻撃はミスした！";
 			}
+
+			// 次のステップ（メッセージ確認待ち）へ移行
+			attackStep_ = AttackStep::WAIT_FOR_MESSAGE;
 		}
 		else
 		{
-			//ボタンが押されていないフレームだけ、バーを進める
+			// ボタンが押されていない間はバーを進める
 			float deltaTime = 1.0f / 60.0f;
 			actionGauge_.Update(deltaTime);
 		}
@@ -493,24 +624,25 @@ void BattlePhase::ProsesSelectAttack(void)
 				return;
 			}
 
-			battleTurnCnt_++;
+		// 次回のためにステップを最初（バー移動）にリセット
+		attackStep_ = AttackStep::MOVING_GAUGE;
 
-			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
-
-			battlePhase_ = ENEMY_TURN;
-		}
+		// ターンを回して敵のターンへ移行
+		battleTurnCnt_++;
+		actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+		battlePhase_ = ENEMY_TURN;
 	}
 }
 
-void BattlePhase::ProsesSelectTalk(void)
+// 話すコマンドの処理
+void BattlePhase::ProcessTalkExecution(void)
 {
-	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
+	//敵のHPが満タンの状態で話すと説得成功回数が増える
+	if (enemy_->GetHP() == enemy_->GetMaxHP())
 	{
-		if (enemy_->GetHP() == enemy_->GetMaxHP())
-		{
-			talkSuccessCount_++;
-		}
+		talkSuccessCount_++;
 
+		// 4回に達した場合は説得成功！
 		if (talkSuccessCount_ >= 4)
 		{
 			currentMessage_ = "相手は戦意を喪失した！";
@@ -518,28 +650,42 @@ void BattlePhase::ProsesSelectTalk(void)
 			//説得完了で戦績記録 ＆ 戦闘終了
 			gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_TALK);
 			battlePhase_ = BATTLE_END;
+			return;
 		}
 		else
 		{
-			currentMessage_ = "相手は少し話に耳を傾けている…";
-
-			battleTurnCnt_++;
-			//battlePhase_ = COMMAND_SELECT;
-			actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
-			battlePhase_ = ENEMY_TURN;
+			// CSVから該当回数のセリフを取得して画面にセット
+			currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_TALK", talkSuccessCount_ - 1);
 		}
-
-		// 決定音
-		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 	}
+	else
+	{
+		// 攻撃してHPが減っている状態のとき
+		currentMessage_ = "相手は警戒して話を聞いてくれない……！";
+	}
+
+	SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+
+	// 次のステップ（セリフ確認待ち）へ移行
+	talkStep_ = TalkStep::WAIT_FOR_MESSAGE;
 }
 
-void BattlePhase::ProsesSelectRun(void)
+// 話すコマンドのセリフ確認後の処理
+void BattlePhase::ProcessTalkMessageWait(void)
 {
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		// ターンが経過するごとに逃げられる確率が変わる
-		int runRate = RUN_SUCCESS_RATE + (battleTurnCnt_ * 5);
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+
+		// 次回のためにステップを最初に戻す
+		talkStep_ = TalkStep::SELECT_TALK;
+
+		// ターンを進めて敵のターンへ移行
+		battleTurnCnt_++;
+		actionGauge_.Start(enemy_->GetGaugeGoodWidth(), enemy_->GetGaugeGreatWidth(), enemy_->GetGaugePerfectWidth());
+		battlePhase_ = ENEMY_TURN;
+	}
+}
 
 		// 逃走成功判定（成功時）
 		if (runRate <= GetRand(99))
