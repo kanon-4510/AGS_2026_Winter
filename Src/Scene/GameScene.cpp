@@ -188,8 +188,8 @@ void GameScene::RecordBattleResult(BATTLE_RESULT result)
 
 GameScene::ENDING_TYPE GameScene::JudgeEndingType(void) const
 {
-	//逃走が3回以上なら逃走エンド
-	if (escapeCount_ >= 3)
+	//逃走を３回以上かつWave5で逃げていれば逃走エンド
+	if (escapeCount_ >= 3 && isBossDestroyed_ == false)
 	{
 		return ENDING_TYPE::ENDING_ESCAPE;
 	}

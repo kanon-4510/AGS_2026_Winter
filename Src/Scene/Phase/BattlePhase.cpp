@@ -94,8 +94,7 @@ void BattlePhase::Draw(void)
 	DrawFormatString(100, 50, 0xFFFFFF, "Battle Turn: %d", battleTurnCnt_);
 	DrawString(100, 100, "Battle Phase", GetColor(255, 0, 0));
 	DrawFormatString(700,120,0xFFFFFF,"Enemy HP: %d",enemy_->GetHP());
-	DrawFormatString(0,120,0xFFFFFF,"Wave Count: %d",gameScene_.GetWaveCount());
-	//DrawFormatString(0, 150, 0xFFFFFF, "Talk Success Count: %s", currentMessage_.c_str());
+	DrawFormatString(0,120,0xFFFFFF,"Wave Count: %d",gameScene_.GetWaveCount());;
 
 	// メッセージボックスの描画
 	int winX = 100, winY = 360, winW = 600, winH = 180;
@@ -126,7 +125,7 @@ void BattlePhase::Draw(void)
 		DrawEnemyTurn();
 		break;
 	case BattlePhase::BATTLE_END:
-		DrawString(100, GameScene::COMMAND_MENU_Y, "�o�g���I��", GetColor(255, 0, 0));
+		DrawString(100, GameScene::COMMAND_MENU_Y, "バトル終了", GetColor(255, 0, 0));
 		break;
 	}
 
@@ -458,6 +457,11 @@ void BattlePhase::ProsesSelectAttack(void)
 	// 敵が倒された場合は戦闘終了
 	if (enemy_->IsDead())
 	{
+		if(gameScene_.GetWaveCount() == 5)
+		{
+			gameScene_.SetBossDestroyed(true);
+		}
+
 		gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
 		battlePhase_ = BATTLE_END;
 
@@ -499,6 +503,14 @@ void BattlePhase::ProsesSelectRun(void)
 	{
 		// ターンが経過するごとに逃げられる確率が変わる
 		int runRate = RUN_SUCCESS_RATE + (battleTurnCnt_ * 5);
+
+		//ボスまでに４回話していなかったら、無視する
+		if (gameScene_.GetEscapeCount() <= 2 && gameScene_.GetWaveCount() >= 5)
+		{
+			currentMessage_ = "逃げれない！";
+			battlePhase_ = ENEMY_TURN;
+			return;
+		}
 
 		// 逃走成功判定（成功時）
 		if (runRate <= GetRand(99))
@@ -544,7 +556,7 @@ void BattlePhase::ProcessAttackGaugeInput(void)
 			else
 			{
 				SoundManager::GetInstance().Play(SoundManager::SRC::MISS_SE, Sound::TIMES::FORCE_ONCE);
-				currentMessage_ = "攻撃はミスした！";
+				currentMessage_ = "攻撃を外した！";
 			}
 
 			// 次のステップ（メッセージ確認待ち）へ移行
@@ -600,12 +612,41 @@ void BattlePhase::ProcessAttackMessageWait(void)
 // 話すコマンドの処理
 void BattlePhase::ProcessTalkExecution(void)
 {
+	//ボスまでに４回話していなかったら、無視する
+	if(gameScene_.GetTalkWinCount() <= 3 && gameScene_.GetWaveCount() == 5)
+	{
+		currentMessage_ = "話を聞いてくれない";
+		talkStep_ = TalkStep::WAIT_FOR_MESSAGE;
+		return;
+	}
+
+	if (gameScene_.GetWaveCount() == 6)
+	{
+		// Wave 6 内での会話回数をカウント
+		talkSuccessCount_++;
+
+		if (talkSuccessCount_ <= 4)
+		{
+			//攻撃後でHPが減っていても関係なく、ON_TALK のセリフを順番に取得して表示する！
+			currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_TALK", talkSuccessCount_ - 1);
+		}
+		else
+		{
+			// 5回目以降は話しても意味がない表示
+			currentMessage_ = "これ以上言葉を重ねても、もう意味はないようだ……。";
+		}
+
+		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
+		talkStep_ = TalkStep::WAIT_FOR_MESSAGE;
+		return; // 通常のHPチェックには進ませず、ここで処理を終える
+	}
+
 	//敵のHPが満タンの状態で話すと説得成功回数が増える
 	if (enemy_->GetHP() == enemy_->GetMaxHP())
 	{
 		talkSuccessCount_++;
 
-		// 4回に達した場合は説得成功！
+		//4回に達した場合は説得成功！
 		if (talkSuccessCount_ >= 4)
 		{
 			currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_TALK", talkSuccessCount_ - 1);
@@ -615,19 +656,19 @@ void BattlePhase::ProcessTalkExecution(void)
 		}
 		else
 		{
-			// CSVから該当回数のセリフを取得して画面にセット
+			//CSVから該当回数のセリフを取得して画面にセット
 			currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_TALK", talkSuccessCount_ - 1);
 		}
 	}
 	else
 	{
-		// 攻撃してHPが減っている状態のとき
+		//攻撃してHPが減っている状態のとき
 		currentMessage_ = "相手は警戒して話を聞いてくれない……！";
 	}
 
 	SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 
-	// 次のステップ（セリフ確認待ち）へ移行
+	//次のステップ（セリフ確認待ち）へ移行
 	talkStep_ = TalkStep::WAIT_FOR_MESSAGE;
 }
 
@@ -638,7 +679,7 @@ void BattlePhase::ProcessTalkMessageWait(void)
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 
-		// 次回のためにステップを最初に戻す
+		//次回のためにステップを最初に戻す
 		talkStep_ = TalkStep::SELECT_TALK;
 
 		// ターンを進めて敵のターンへ移行

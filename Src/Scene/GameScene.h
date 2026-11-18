@@ -89,7 +89,7 @@ public:
 	bool IsReturnFromBattle() const { return isReturnFromBattle_; }
 	void SetReturnFromBattle(bool flag) { isReturnFromBattle_ = flag; }
 
-	// 戦績ゲッター
+	//戦績ゲッター
 	int GetAttackWinCount() const { return battleCount_; }
 	int GetTalkWinCount() const { return talkCount_; }
 	int GetEscapeCount() const { return escapeCount_; }
@@ -97,6 +97,9 @@ public:
 	void NextWave(void);
 	bool IsEnemyUsed(int index) const;
 	void SetEnemyUsed(int index);
+
+	//ボスを倒したかどうかのフラグを設定
+	void SetBossDestroyed(bool flag) { isBossDestroyed_ = flag; }
 
 	// ストーリーモードかどうかを取得
 	bool IsStory() const;
@@ -125,11 +128,13 @@ private:
 	int escapeCount_ = 0;		//逃げた回数
 	
 	BATTLE_RESULT lastBattleResult_; // 直前の戦闘結果
+
 	bool isReturnFromBattle_;     // 戦闘からの復帰フラグ
+	bool hasStartedBattle_ = false;	//戦闘が開始されたかどうかのフラグ
+	bool isBossDestroyed_ = false;	//ボスを倒したかどうかのフラグ
 
-	bool usedEnemies_[7] = {};
+	bool usedEnemies_[7] = {};	//出現済みの敵を管理
 
-	bool hasStartedBattle_ = false;
 
 	int playerImg_; //プレイヤーの画像ハンドル
 	int stageImg_;  //ステージの画像ハンドル
