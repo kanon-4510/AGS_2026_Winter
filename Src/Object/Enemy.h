@@ -32,6 +32,12 @@ public:
 	static constexpr int ENEMY_CENTER_X = 640;
 	static constexpr int ENEMY_CENTER_Y = 220;
 
+	// HPバーの表示位置
+	static constexpr int BAR_X = 520;
+	static constexpr int BAR_Y = 90;
+	static constexpr int BAR_WIDTH = 180;
+	static constexpr int BAR_HEIGHT = 15;
+
 	// 敵情報の表示位置
 	static constexpr int STATUS_X = 890;
 	static constexpr int HP_STATUS_Y = 230;
@@ -120,4 +126,7 @@ private:
 
 	// 敵画像
 	int imageHandle_;
+
+	void DrawHpBar(int x, int y, int width, int height);
+
 };

@@ -272,6 +272,8 @@ void Enemy::Draw()
 			atk_
 		);
 	}
+
+	DrawHpBar(BAR_X, BAR_Y, BAR_WIDTH, BAR_HEIGHT);
 }
 
 void Enemy::Release()
@@ -346,4 +348,11 @@ Enemy::TYPE Enemy::GetType() const
 bool Enemy::IsBoss() const
 {
 	return type_ == TYPE::DEVIL;
+}
+
+void Enemy::DrawHpBar(int x, int y, int width, int height)
+{
+	//HPバーの描画
+	DrawBox(x, y, x + width, y + height, 0xFF0000, true); //赤い背景
+	DrawBox(x, y, x + (width * hp_ / maxHp_), y + height, 0x00FF00, true); //緑のHPバー
 }

@@ -13,6 +13,11 @@ public:
 	static constexpr int STATUS_OFFSET = 120;		//ステータスのオフセット
 	static constexpr int STATUS_COLOR = 0xFFFFFF;	//ステータスの描画色
 
+	static constexpr int BAR_X = 520;	//HPバーの描画位置X
+	static constexpr int BAR_Y = 570;	//HPバーの描画位置Y
+	static constexpr int BAR_WIDTH = 180;	//HPバーの幅
+	static constexpr int BAR_HEIGHT = 15;	//HPバーの高さ
+
 	static constexpr int PLAYER_POS_X = 900;	//プレイヤーの描画位置X
 	static constexpr int PLAYER_POS_Y = 240;	//プレイヤーの描画位置Y
 
@@ -62,5 +67,8 @@ private:
 	float defense_ = 0.0f;	//防御力
 
 	float heal_ = 0.4f;			//回復量
+
+	//HPバーの描画処理
+	void DrawHpBar(int x, int y, int width, int height);
 
 };

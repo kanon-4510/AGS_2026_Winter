@@ -23,6 +23,9 @@ void Player::Draw()
 	DrawFormatString(STATUS_X, STATUS_Y, STATUS_COLOR, "HP: %d", hp_);
 	DrawFormatString(STATUS_X + STATUS_OFFSET, STATUS_Y, STATUS_COLOR, "ATK: %d", power_);
 	//DrawFormatString(STATUS_X, BASE_Y+40, STATUS_COLOR, "DEF: %.1f", defense_);
+
+	//HPÉoÅ[ÇÃï`âÊ
+	DrawHpBar(BAR_X, BAR_Y, BAR_WIDTH, BAR_HEIGHT);
 }
 
 float Player::Attack(float power)
@@ -89,4 +92,11 @@ int Player::GetMaxHp()
 int Player::GetHP()
 {
 	return hp_;
+}
+
+void Player::DrawHpBar(int x, int y, int width, int height)
+{
+	//HPÉoÅ[ÇÃï`âÊ
+	DrawBox(x, y, x + width, y + height, 0xFF0000, true); //ê‘Ç¢îwåi
+	DrawBox(x, y, x + (width * hp_ / maxHp_), y + height, 0x00FF00, true); //óŒÇÃHPÉoÅ[
 }
