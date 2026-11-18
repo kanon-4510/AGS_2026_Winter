@@ -43,7 +43,7 @@ void BattlePhase::Init(void)
 		currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "START_BATTLE");
 	}
 
-	//???y
+	//バトルBGM再生
 	SoundManager::GetInstance().Play(SoundManager::SRC::GAME_BGM, Sound::TIMES::LOOP);
 
 	cursorImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::CURSOR).handleId_;
@@ -54,13 +54,13 @@ void BattlePhase::Init(void)
 
 void BattlePhase::Update(void)
 {
-	// �G�̍X�V
+	// 敵の更新
 	if (enemy_)
 	{
 		enemy_->Update();
 	}
 
-	// �_���[�W�t���b�V���̍X�V
+	// ダメージフラッシュの更新
 	if (damageFlashTimer_ > 0.0f)
 	{
 		damageFlashTimer_ -= 1.0f / 60.0f;
@@ -71,7 +71,7 @@ void BattlePhase::Update(void)
 		}
 	}
 
-	//�t�F�[�Y���Ƃ̍X�V������Ăяo��
+	// バトルフェーズの更新
 	switch (battlePhase_)
 	{
 	case BattlePhase::COMMAND_SELECT:
@@ -97,7 +97,7 @@ void BattlePhase::Draw(void)
 	DrawFormatString(0,120,0xFFFFFF,"Wave Count: %d",gameScene_.GetWaveCount());
 	//DrawFormatString(0, 150, 0xFFFFFF, "Talk Success Count: %s", currentMessage_.c_str());
 
-	// ���b�Z�[�W�g����уA�N�V�����Q�[�W�̕`��̈�w��i��: ��ʉ����j
+	// メッセージボックスの描画
 	int winX = 100, winY = 360, winW = 600, winH = 180;
 
 	//DrawMultilineText(275, 700, currentMessage_, GetColor(255, 255, 255), 24);
@@ -106,7 +106,7 @@ void BattlePhase::Draw(void)
 	//アクションゲージ枠（常時表示）
 	actionGauge_.Draw();
 
-	// �G��`��
+	//敵の描画
 	if (enemy_)
 	{
 		enemy_->Draw();
@@ -130,7 +130,7 @@ void BattlePhase::Draw(void)
 		break;
 	}
 
-	// ��_���[�W���̐ԃt���b�V��
+	//
 	if (damageFlashTimer_ > 0.0f)
 	{
 		int screenWidth;
@@ -159,7 +159,7 @@ void BattlePhase::SpawnEnemy()
 {
 	Enemy::TYPE type;
 
-	// GameScene���猻�݂̐퓬�񐔂�擾
+	// 現在のwave数を取得
 	int wave = gameScene_.GetWaveCount();
 	// カエル
 	if (wave == 1)
@@ -171,7 +171,7 @@ void BattlePhase::SpawnEnemy()
 
 	else if (wave == 5)
 	{
-		// �J�G��
+		// ボス
 		if (wave == 1)
 		{
 			type = Enemy::TYPE::FROG;
@@ -199,20 +199,20 @@ void BattlePhase::SpawnEnemy()
 	}
 	else
 	{
-		// �J�G��
+		// ボス
 		if (wave == 1)
 		{
 			type = Enemy::TYPE::FROG;
 			gameScene_.SetEnemyUsed(0);
 		}
-		// �{�X
+		// 通常敵
 
 		else if (wave == 5)
 		{
 			type = Enemy::TYPE::DEVIL;
 		}
 
-		// 2�`4��ڂ͏d���Ȃ��Ń����_��
+		// 2〜4waveの通常敵
 		else
 		{
 			int index;
@@ -257,23 +257,23 @@ void BattlePhase::SpawnEnemy()
 
 void BattlePhase::UpdateCommandSelect(void)
 {
-	//�\���L�[�ŃR�}���h�I���s������
+	// コマンド選択の更新
 	if (ins_.IsTrgDown(KEY_INPUT_RIGHT))
 	{
 		selectedIndex_ = (selectedIndex_ + 1) % MAX_COMMANDS;
-		//�J�[�\����
+		// カーソル移動
 		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 	else if(ins_.IsTrgDown(KEY_INPUT_LEFT))
 	{
 		selectedIndex_ = (selectedIndex_ - 1 + MAX_COMMANDS) % MAX_COMMANDS;
-		//�J�[�\����
+		// カーソル移動
 		SoundManager::GetInstance().Play(SoundManager::SRC::CURSOR_SE, Sound::TIMES::FORCE_ONCE);
 	}
 
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		// �L�[�������ꂽ�Ƃ������e�R�}���h������Ăяo��
+		// コマンド選択の決定
 		if (selectedIndex_ == 0)
 		{
 			commandType_ = ATTACK;
@@ -291,7 +291,7 @@ void BattlePhase::UpdateCommandSelect(void)
 			battlePhase_ = PLAYER_TURN;
 		}
 
-		//���艹
+		// 決定音再生
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 
 		selectedIndex_ = 0;
@@ -316,7 +316,7 @@ void BattlePhase::UpdatePlayerTurn(void)
 
 void BattlePhase::UpdateEnemyTurn(void)
 {
-	// �o�[���܂������Ă���Œ�
+	// 敵のターンの更新
 	if (actionGauge_.IsMoving())
 	{
 		float deltaTime = 1.0f / 60.0f;
@@ -324,22 +324,22 @@ void BattlePhase::UpdateEnemyTurn(void)
 
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
-			// �Q�[�W��~�߂�
+			// ボタンが押された
 			GaugeState state = actionGauge_.PressButton();
 
-			// �h�䗦��擾
+			// 結果を取得
 			float rate = ActionGauge::GetResultRate(state);
 
-			// �h�䏈��
+			// 防御
 			player_->Defense(rate);
 
-			// �_���[�W��󂯂�O��HP
+			// プレイヤーのHPを取得
 			int beforeHP = player_->GetHP();
 
-			// �G�̍U���͂�g���ă_���[�W�v�Z
+			// 敵の攻撃を受ける
 			player_->Damage(enemy_->GetATK());
 
-			// �_���[�W��󂯂����HP
+			// プレイヤーのHPを取得
 			int afterHP = player_->GetHP();
 
 			int damage = beforeHP - afterHP;
@@ -355,10 +355,10 @@ void BattlePhase::UpdateEnemyTurn(void)
 				SoundManager::GetInstance().Play(SoundManager::SRC::PARRY_SE,Sound::TIMES::FORCE_ONCE);
 			}
 		}
-		// �o�[���Ō�܂œ����Ă�Enter������Ȃ������ꍇ
+		// ボタンが押されなかった場合
 		else if (!actionGauge_.IsMoving())
 		{
-			// �h�䎸�s�Ƃ��Ĉ���
+			// 防御を無効化
 			player_->Defense(0.0f);
 
 			int beforeHP = player_->GetHP();
@@ -375,7 +375,7 @@ void BattlePhase::UpdateEnemyTurn(void)
 			SoundManager::GetInstance().Play(SoundManager::SRC::CRITICALATTACK_SE,Sound::TIMES::FORCE_ONCE);
 		}
 	}
-	// �o�[���~�܂�����
+	// ボタンが押されなかった場合
 	else
 	{
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
@@ -395,17 +395,17 @@ void BattlePhase::UpdateBattleEnd(void)
 {
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		//if(�X�g�[���[���[�h�̎�)
+		//if(ストーリーモードかどうか)
 		if (gameScene_.IsStory())
 		{
 			gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_STORY);
 
-			// ���艹
+			// 決定音再生
 			SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 		}
 		else
 		{
-			// Wave 5��N���A������Q�[���N���A
+			// Wave 5の通常敵
 			if (gameScene_.GetWaveCount() >= 5)
 			{
 				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::CLEAR);
@@ -424,7 +424,7 @@ void BattlePhase::UpdateBattleEnd(void)
 
 void BattlePhase::DrawCommandSelect(void)
 {
-	//�R�}���h�I��̕`�揈��
+	// コマンド選択の描画
 	DrawGraph(ARROW_POS_X + ARROW_OFFSET * selectedIndex_, ARROW_POS_Y, cursorImage_, true);
 	DrawGraph(GameScene::COMMAND_ATTACK_X, GameScene::COMMAND_MENU_Y, attackImage_, true);
 	DrawGraph(GameScene::COMMAND_TALK_X, GameScene::COMMAND_MENU_Y, talkImage_, true);
@@ -433,15 +433,15 @@ void BattlePhase::DrawCommandSelect(void)
 
 void BattlePhase::DrawPlayerTurn(void)
 {
-	//�v���C���[�̃^�[���̕`�揈��
-	DrawString(100, 130, "�v���C���[�^�[��",0xFFFFFF);
+	// プレイヤーのターンの描画
+	DrawString(100, 130, "プレイヤーのターン",0xFFFFFF);
 	DrawFormatString(100, GameScene::COMMAND_MENU_Y, 0xFFFFFF, "CommandType: %d", commandType_);
 }
 
 void BattlePhase::DrawEnemyTurn(void)
 {
-	//�G�̃^�[���̕`�揈��
-	DrawString(100, 130, "�G�̃^�[��", 0xFFFFFF);
+	// 敵のターンの描画
+	DrawString(100, 130, "敵のターン", 0xFFFFFF);
 }
 
 void BattlePhase::DrawMultilineText(int x, int y, const std::string& text, unsigned int color, int lineHeight)
@@ -459,7 +459,7 @@ void BattlePhase::DrawMultilineText(int x, int y, const std::string& text, unsig
 
 void BattlePhase::ProsesSelectAttack(void)
 {
-	//���łɓG��|���Ă���ꍇ�̑����̏I������
+	// 敵が倒された場合は戦闘終了
 	if (enemy_->IsDead())
 	{
 		gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
@@ -469,7 +469,7 @@ void BattlePhase::ProsesSelectAttack(void)
 		return;
 	}
 
-	// �X�e�b�v���Ƃɏ�������S����
+	// 攻撃のステップに応じた処理
 	switch (attackStep_)
 	{
 	case AttackStep::MOVING_GAUGE:
@@ -484,7 +484,7 @@ void BattlePhase::ProsesSelectAttack(void)
 
 void BattlePhase::ProsesSelectTalk(void)
 {
-	// �X�e�b�v���Ƃɏ����𕪊�
+	// 話すコマンドのステップに応じた処理
 	switch (talkStep_)
 	{
 	case TalkStep::SELECT_TALK:
@@ -534,7 +534,7 @@ void BattlePhase::ProcessAttackGaugeInput(void)
 	{
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
-			// ����{�^���������ꂽ��o�[��~�߂ă_���[�W�v�Z
+			// ボタンが押された場合
 			GaugeState state = actionGauge_.PressButton();
 			float rate = ActionGauge::GetResultRate(state);
 			int power = player_->Attack(rate);
