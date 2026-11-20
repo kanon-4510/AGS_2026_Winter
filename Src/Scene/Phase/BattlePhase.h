@@ -49,6 +49,9 @@ public:
 	static constexpr int ARROW_POS_Y = 628;		//矢印座標Y
 	static constexpr int ARROW_OFFSET = 225;	//矢印のオフセット
 
+	const float COMBO_BONUS = 0.2f;				//コンボ成功時の倍率上昇値
+	const float MAX_COMBO = 2.0f;				//コンボの最大倍率
+
 	BattlePhase(GameScene& gameScene);
 	~BattlePhase();
 	void Init(void)override;
@@ -79,8 +82,10 @@ private:
 	int battleTurnCnt_;				//バトルのターン数をカウント
 	int talkSuccessCount_ = 0;		//現在の説得成功回数
 
-	int damageCount_ = 0;          // ダメージを受けた回数
+	int damageCount_ = 0;			// ダメージを受けた回数
 	bool isHalfHpTalkDone_ = false; // HP半分時のセリフを再生済みか
+
+	int comboCount_ = 0;            //連続成功回数
 
 	float damageFlashTimer_ = 0.0f;	//被ダメージ時の画面フラッシュ
 
@@ -119,4 +124,6 @@ private:
 	void ProcessTalkMessageWait(void); // セリフ確認後に敵のターンへ移行する
 
 	void DamageTalk(void);	//ダメージを受けたときのセリフ処理
+
+	float GetComboMultiplier() const; //連続成功時の倍率を取得する
 };
