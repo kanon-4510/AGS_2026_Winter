@@ -121,7 +121,7 @@ void GameScene::Draw(void)
 	phase_->Draw();
 	
 	//デバッグ情報の描画
-	DrawDebug();
+	//DrawDebug();
 }
 
 //解放処理
