@@ -33,9 +33,9 @@ void Enemy::Init(TYPE type)
 		maxHp_ = 20;
 		atk_ = 10;
 		imageHandle_ = LoadGraph("Data/Enemy/Frog.png");
-		gaugeGoodWidth_ = 0.30f;
-		gaugeGreatWidth_ = 0.40f;
-		gaugePerfectWidth_ = 0.15f;
+		gaugeGoodWidth_ = 0.35f;
+		gaugeGreatWidth_ = 0.30f;
+		gaugePerfectWidth_ = 0.20f;
 		break;
 
 	case TYPE::GOBLIN:
@@ -44,8 +44,8 @@ void Enemy::Init(TYPE type)
 		atk_ = 15;
 		imageHandle_ = LoadGraph("Data/Enemy/Goblin.png");
 		gaugeGoodWidth_ = 0.35f;
-		gaugeGreatWidth_ = 0.40f;
-		gaugePerfectWidth_ = 0.10f;
+		gaugeGreatWidth_ = 0.35f;
+		gaugePerfectWidth_ = 0.15f;
 		break;
 
 	case TYPE::REAPER:
@@ -54,8 +54,8 @@ void Enemy::Init(TYPE type)
 		atk_ = 20;
 		imageHandle_ = LoadGraph("Data/Enemy/Reaper.png");
 		gaugeGoodWidth_ = 0.35f;
-		gaugeGreatWidth_ = 0.40f;
-		gaugePerfectWidth_ = 0.08f;
+		gaugeGreatWidth_ = 0.35f;
+		gaugePerfectWidth_ = 0.10f;
 		break;
 
 	case TYPE::SLIME:
@@ -65,7 +65,7 @@ void Enemy::Init(TYPE type)
 		imageHandle_ = LoadGraph("Data/Enemy/Slime.png");
 		gaugeGoodWidth_ = 0.30f;
 		gaugeGreatWidth_ = 0.40f;
-		gaugePerfectWidth_ = 0.15f;
+		gaugePerfectWidth_ = 0.10f;
 		break;
 
 	case TYPE::DARKKNIGHT:
@@ -75,7 +75,7 @@ void Enemy::Init(TYPE type)
 		imageHandle_ = LoadGraph("Data/Enemy/Darkknight.png");
 		gaugeGoodWidth_ = 0.35f;
 		gaugeGreatWidth_ = 0.35f;
-		gaugePerfectWidth_ = 0.06f;
+		gaugePerfectWidth_ = 0.08f;
 		break;
 
 	case TYPE::BAT:
@@ -103,18 +103,18 @@ void Enemy::Init(TYPE type)
 		maxHp_ = 200;
 		atk_ = 30;
 		imageHandle_ = LoadGraph("Data/Enemy/Devil.png");
-		gaugeGoodWidth_ = 0.30f;
-		gaugeGreatWidth_ = 0.30f;
-		gaugePerfectWidth_ = 0.05f;
+		gaugeGoodWidth_ = 0.35f;
+		gaugeGreatWidth_ = 0.25f;
+		gaugePerfectWidth_ = 0.08f;
 		break;
 
 	case TYPE::PIKO:
 		name_ = "ピコ";
-		maxHp_ = 999;
-		atk_ = 99;
-		gaugeGoodWidth_ = 0.50f;
-		gaugeGreatWidth_ = 0.20f;
-		gaugePerfectWidth_ = 0.03f;
+		maxHp_ = 250;
+		atk_ = 33;
+		gaugeGoodWidth_ = 0.35f;
+		gaugeGreatWidth_ = 0.25f;
+		gaugePerfectWidth_ = 0.08f;
 		imageHandle_ = LoadGraph("Data/Enemy/Piko.png");
 	}
 
