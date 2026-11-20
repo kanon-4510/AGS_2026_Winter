@@ -96,6 +96,8 @@ void BattlePhase::Draw(void)
 	DrawFormatString(700,120,0xFFFFFF,"Enemy HP: %d",enemy_->GetHP());
 	DrawFormatString(0,120,0xFFFFFF,"Wave Count: %d",gameScene_.GetWaveCount());;
 
+	DrawFormatString(0, 200, 0xFFFFFF, "combo:%d", comboCount_);
+
 	// メッセージボックスの描画
 	int winX = 100, winY = 360, winW = 600, winH = 180;
 
@@ -388,6 +390,7 @@ void BattlePhase::UpdateEnemyTurn(void)
 
 void BattlePhase::UpdateBattleEnd(void)
 {
+	comboCount_ = 0;//コンボ回数をリセット
 	if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 	{
 		//if(ストーリーモードかどうか)
@@ -457,11 +460,6 @@ void BattlePhase::ProsesSelectAttack(void)
 	// 敵が倒された場合は戦闘終了
 	if (enemy_->IsDead())
 	{
-		if(gameScene_.GetWaveCount() == 5)
-		{
-			gameScene_.SetBossDestroyed(true);
-		}
-
 		gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ATTACK);
 		battlePhase_ = BATTLE_END;
 
@@ -504,14 +502,6 @@ void BattlePhase::ProsesSelectRun(void)
 		// ターンが経過するごとに逃げられる確率が変わる
 		int runRate = RUN_SUCCESS_RATE + (battleTurnCnt_ * 5);
 
-		//ボスまでに４回話していなかったら、無視する
-		if (gameScene_.GetEscapeCount() <= 2 && gameScene_.GetWaveCount() >= 5)
-		{
-			currentMessage_ = "逃げれない！";
-			battlePhase_ = ENEMY_TURN;
-			return;
-		}
-
 		// 逃走成功判定（成功時）
 		if (runRate <= GetRand(99))
 		{
@@ -543,10 +533,12 @@ void BattlePhase::ProcessAttackGaugeInput(void)
 		if (ins_.IsTrgDown(KEY_INPUT_RETURN))
 		{
 			// ボタンが押された場合
+			++comboCount_;//連続成功回数を増やす
 			GaugeState state = actionGauge_.PressButton();
 			float rate = ActionGauge::GetResultRate(state);
 			int power = player_->Attack(rate);
-			enemy_->Damage(power);
+			int attack = power * GetComboMultiplier();//コンボ倍率を適用
+			enemy_->Damage(attack);
 
 			if (power > 0)
 			{
@@ -556,6 +548,7 @@ void BattlePhase::ProcessAttackGaugeInput(void)
 			else
 			{
 				SoundManager::GetInstance().Play(SoundManager::SRC::MISS_SE, Sound::TIMES::FORCE_ONCE);
+				comboCount_ = 0; //コンボ回数をリセット
 				currentMessage_ = "攻撃を外した！";
 			}
 
@@ -574,6 +567,7 @@ void BattlePhase::ProcessAttackGaugeInput(void)
 				// 自動的に「ミス（未操作）」としてダメージ0の処理を行う
 				int power = 0;
 				enemy_->Damage(power);
+				comboCount_ = 0; //コンボ回数をリセット
 
 				SoundManager::GetInstance().Play(SoundManager::SRC::MISS_SE, Sound::TIMES::FORCE_ONCE);
 
@@ -612,35 +606,6 @@ void BattlePhase::ProcessAttackMessageWait(void)
 // 話すコマンドの処理
 void BattlePhase::ProcessTalkExecution(void)
 {
-	//ボスまでに４回話していなかったら、無視する
-	if(gameScene_.GetTalkWinCount() <= 3 && gameScene_.GetWaveCount() == 5)
-	{
-		currentMessage_ = "話を聞いてくれない";
-		talkStep_ = TalkStep::WAIT_FOR_MESSAGE;
-		return;
-	}
-
-	if (gameScene_.GetWaveCount() == 6)
-	{
-		// Wave 6 内での会話回数をカウント
-		talkSuccessCount_++;
-
-		if (talkSuccessCount_ <= 4)
-		{
-			//攻撃後でHPが減っていても関係なく、ON_TALK のセリフを順番に取得して表示する！
-			currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_TALK", talkSuccessCount_ - 1);
-		}
-		else
-		{
-			// 5回目以降は話しても意味がない表示
-			currentMessage_ = "これ以上言葉を重ねても、もう意味はないようだ……。";
-		}
-
-		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
-		talkStep_ = TalkStep::WAIT_FOR_MESSAGE;
-		return; // 通常のHPチェックには進ませず、ここで処理を終える
-	}
-
 	//敵のHPが満タンの状態で話すと説得成功回数が増える
 	if (enemy_->GetHP() == enemy_->GetMaxHP())
 	{
@@ -703,4 +668,14 @@ void BattlePhase::DamageTalk(void)
 		currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_DAMAGE", 1);
 		isHalfHpTalkDone_ = true;
 	}
+}
+
+float BattlePhase::GetComboMultiplier() const
+{
+	if (comboCount_ <= 1) {
+		return 1.0f;
+	}
+
+	float bonus = 1.0f + COMBO_BONUS * static_cast<float>(comboCount_ - 1);
+	return (bonus < MAX_COMBO) ? bonus : MAX_COMBO;
 }

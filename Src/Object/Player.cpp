@@ -72,6 +72,7 @@ void Player::Damage(int damage)
 
 	if (hp_ <= 0)
 	{
+		hp_ = 0;
 		Death();
 	}
 }
