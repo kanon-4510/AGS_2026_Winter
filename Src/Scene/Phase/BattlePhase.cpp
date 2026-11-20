@@ -381,8 +381,6 @@ void BattlePhase::UpdateEnemyTurn(void)
 			actionGauge_.Reset();
 
 			battlePhase_ = COMMAND_SELECT;
-
-			SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE,Sound::TIMES::FORCE_ONCE);
 		}
 	}
 }
@@ -508,6 +506,7 @@ void BattlePhase::ProsesSelectRun(void)
 			//逃走結果を GameScene に記録！
 			gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_ESCAPE);
 
+			SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
 			battlePhase_ = BATTLE_END;
 		}
 		// 失敗時
@@ -610,6 +609,7 @@ void BattlePhase::ProcessTalkExecution(void)
 		{
 			currentMessage_ = gameScene_.getMessage(enemy_->GetName(), "ON_TALK", talkSuccessCount_ - 1);
 			gameScene_.RecordBattleResult(GameScene::BATTLE_RESULT::RESULT_TALK);
+			SoundManager::GetInstance().Stop(SoundManager::SRC::GAME_BGM);
 			battlePhase_ = BATTLE_END;
 			return;
 		}
@@ -624,8 +624,6 @@ void BattlePhase::ProcessTalkExecution(void)
 		// 攻撃してHPが減っている状態のとき
 		currentMessage_ = "相手は警戒して話を聞いてくれない……！";
 	}
-
-	SoundManager::GetInstance().Play(SoundManager::SRC::SELECT_SE, Sound::TIMES::FORCE_ONCE);
 
 	// 次のステップ（セリフ確認待ち）へ移行
 	talkStep_ = TalkStep::WAIT_FOR_MESSAGE;
