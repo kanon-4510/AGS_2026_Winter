@@ -24,6 +24,14 @@ StoryPhase::StoryPhase(GameScene& gameScene)
 {
 	storyPhase_ = MAIN_STORY;
 	currentLineIndex_ = 0;
+
+	if (gameScene_.IsStory())
+	{
+		//ストーリーBGM
+		SoundManager::GetInstance().Stop(SoundManager::SRC::STORY_BGM);
+
+		SoundManager::GetInstance().Play(SoundManager::SRC::STORY_BGM, Sound::TIMES::LOOP);
+	}
 }
 
 StoryPhase::~StoryPhase()
@@ -273,6 +281,9 @@ void StoryPhase::UpdateMainStory(void)
 			{
 				gameScene_.StartNextBattle();
 				gameScene_.ChangePhase(GameScene::QUEST_PHASE::PHASE_BATTLE);
+
+				SoundManager::GetInstance().Stop(SoundManager::SRC::STORY_BGM);
+
 				return;
 			}
 			else if (tag == "JUMP_MESS")
@@ -299,6 +310,8 @@ void StoryPhase::UpdateMainStory(void)
 			{
 				// エンディングの最後に到達したらクリアシーンへ移行
 				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::OVER);
+				SoundManager::GetInstance().Stop(SoundManager::SRC::STORY_BGM);
+
 				return;
 			}
 			// 次の行へ進める
@@ -360,6 +373,8 @@ void StoryPhase::UpdateEnding(void)
 			// エンディングの最後に到達したらクリアシーンへ移行
 			if (tag == "END_GAME")
 			{
+				SoundManager::GetInstance().Stop(SoundManager::SRC::STORY_BGM);
+
 				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::CLEAR);
 				return;
 			}
@@ -394,6 +409,8 @@ void StoryPhase::UpdateEnding(void)
 			}
 			else if (tag == "BAD_END")
 			{
+				SoundManager::GetInstance().Stop(SoundManager::SRC::STORY_BGM);
+
 				// エンディングの最後に到達したらクリアシーンへ移行
 				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::OVER);
 				return;

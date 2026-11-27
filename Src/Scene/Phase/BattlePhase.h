@@ -91,6 +91,8 @@ private:
 
 	int selectedIndex_ = 0;			//選択中のコマンドのインデックス
 
+	int battleImage_;				//背景画像
+
 	int cursorImage_;				//カーソル画像
 	int attackImage_;				//攻撃画像
 	int talkImage_;					//会話画像

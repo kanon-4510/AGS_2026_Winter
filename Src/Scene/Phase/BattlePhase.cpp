@@ -46,6 +46,8 @@ void BattlePhase::Init(void)
 	//バトルBGM再生
 	SoundManager::GetInstance().Play(SoundManager::SRC::GAME_BGM, Sound::TIMES::LOOP);
 
+	battleImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::GAME_SCENE).handleId_;
+
 	cursorImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::CURSOR).handleId_;
 	attackImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_ATTACK).handleId_;
 	talkImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::COMMAND_TALK).handleId_;
@@ -96,6 +98,8 @@ void BattlePhase::Draw(void)
 	DrawFormatString(700,120,0xFFFFFF,"Enemy HP: %d",enemy_->GetHP());
 	DrawFormatString(0,120,0xFFFFFF,"Wave Count: %d",gameScene_.GetWaveCount());;
 
+	DrawGraph(0, 0, battleImage_, true);
+
 	// メッセージボックスの描画
 	int winX = 100, winY = 360, winW = 600, winH = 180;
 
@@ -129,7 +133,6 @@ void BattlePhase::Draw(void)
 		break;
 	}
 
-	//
 	if (damageFlashTimer_ > 0.0f)
 	{
 		int screenWidth;

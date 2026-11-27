@@ -21,7 +21,7 @@ void ClearScene::Init(void)
 {
 	normalOffsetX_ = 0;
 	//‰¹Šy
-	SoundManager::GetInstance().Play(SoundManager::SRC::GAMECLEAR_BGM, Sound::TIMES::LOOP);
+	SoundManager::GetInstance().Play(SoundManager::SRC::GAMECLEAR_BGM, Sound::TIMES::ONCE);
 	//---------------------------------------------
 }
 

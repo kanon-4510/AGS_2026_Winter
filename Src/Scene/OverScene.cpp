@@ -3,6 +3,7 @@
 #include "../Manager/SceneManager.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/SoundManager.h"
+#include "../Manager/ResourceManager.h"
 #include "../Common/Color.h"
 #include "OverScene.h"
 
@@ -22,6 +23,9 @@
 void OverScene::Init(void)
 {
 	normalOffsetX_ = 0;
+
+	//îwåi
+	gameOverImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::GAME_OVER).handleId_;
 
 	//âπäy
 	SoundManager::GetInstance().Play(SoundManager::SRC::GAMEOVER_BGM, Sound::TIMES::ONCE);
@@ -75,15 +79,17 @@ void OverScene::Update(void)
 //ï`âÊèàóù
 void OverScene::Draw(void)
 {
+	DrawGraph(0, 0, gameOverImage_, true);
+
 	SetFontSize(TITLE_FONT_SIZE);
-	std::string str = "ê¢äEÇéÁÇÍÇ»Ç©Ç¡ÇΩ";
+	std::string str = "óÕêsÇ´ÇΩ";
 	int width = GetDrawStringWidth(str.c_str(),str.size() );
 	DrawString(Application::SCREEN_HALFSIZE_X - width / VALUE, GAMEOVER_MESSAGE_Y, str.c_str(), Color::RED);
-
+	
 	SetFontSize(OPTION_FONT_SIZE);
 	DrawFormatString(ARROW_X - normalOffsetX_, ARROW_Y + normalOffsetY_, Color::WHITE, "Å®");
 
-	DrawFormatString(OVER_MESSAGE_X, OVER_MESSAGE_Y, Color::WHITE, "ï ÇÃìπÇ÷");
+	DrawFormatString(OVER_MESSAGE_X, OVER_MESSAGE_Y, Color::WHITE, "ÇÊÇ›Ç™Ç¶ÇÈ");
 
 	DrawFormatString(OVER_MESSAGE_X - TITLE_RETURN_TEXT_OFFSET_X, Application::SCREEN_SIZE_Y - TITLE_RETURN_BOTTOM_MARGIN_Y, Color::WHITE, "éÛÇØì¸ÇÍÇÈ");
 	SetFontSize(DEFAULT_FONT_SIZE);

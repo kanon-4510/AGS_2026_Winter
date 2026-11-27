@@ -39,12 +39,12 @@ void ResourceManager::Init(void)
 
 	//ゲームシーン用画像
 	//----------------------------------------------
-	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + "Stage/Stage_.png");
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + "Game/GameScene.png");
 	resourcesMap_.emplace(SRC::GAME_SCENE, std::move(res));
 	//GameOverScene
 	//-------------------------------------
 	// ゲームオーバー
-	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + "GameOver/GameOver.png");
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + "Over/GameOver.png");
 	resourcesMap_.emplace(SRC::GAME_OVER, std::move(res));
 
 	//プレイヤー
