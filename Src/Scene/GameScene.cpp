@@ -48,7 +48,6 @@ void GameScene::Init(void)
 	talkCount_ = 0;
 	escapeCount_ = 0;
 
-	//
 	bool retFlag;
 	CSVInit(retFlag);
 	if (retFlag) return;

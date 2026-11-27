@@ -36,6 +36,11 @@ void SoundManager::Init(void)
 	res.ChangeMaxVolume(0.5);
 	soundMap_.emplace(SRC::GAME_BGM, res);
 
+	// ストーリーBGM
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "StoryBGM.mp3");
+	res.ChangeMaxVolume(0.5);
+	soundMap_.emplace(SRC::STORY_BGM, res);
+
 	// ゲームクリアBGM
 	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + "GameClearBGM.mp3");
 	res.ChangeMaxVolume(0.5);
